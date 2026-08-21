@@ -60,13 +60,18 @@
       theme: 'paper',
       ratio: '3:4',
       // A photograph arrives with far more tonal range than an engraving can hold, so the
-      // defaults already lean on it: the levels open a little off both ends to give the
-      // screen room, and softening is on to stop the lines breaking into speckle. Fit to
-      // photo replaces the first two with what the picture in hand actually contains.
-      black: 8,
-      white: 92,
+      // levels start well inside it — clipping both ends is what gives the screen a range
+      // it can actually draw. Fit levels to this photo replaces the two with what the
+      // picture in hand contains.
+      //
+      // Softening starts off. It is the control most worth reaching for on a noisy or
+      // high-detail photograph, where hatching the raw pixels breaks the lines into
+      // speckle, but starting at zero shows the photograph as it is and leaves the
+      // blurring a decision rather than something already done to it.
+      black: 15,
+      white: 85,
       midtone: 100,
-      smooth: 35,
+      smooth: 0,
       pitch: 100,
       contour: false
     };

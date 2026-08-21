@@ -522,8 +522,13 @@ a solid field of cross-hatch — a true reading of the pixels and a useless pict
 
 The levels run in the shader rather than through `ctx.filter`, so the arithmetic is
 exactly the arithmetic and not whatever the browser means by `contrast()`. The 2D stage
-does grey and blur only. Softening is not optional decoration: photographs carry noise and
-detail the blocks do not have, and hatching a raw photo breaks the lines into speckle.
+does grey and blur only.
+
+Softening starts at zero, which is a choice about the default rather than about the
+control. Photographs carry noise and detail the blocks do not have, and hatching a raw one
+can break the lines into speckle — but that depends entirely on the photograph, and a tool
+that has already blurred your picture before you have looked at it is harder to reason
+about than one that has not. Reach for it when a portrait comes out gritty.
 
 ### Two things that will bite
 
