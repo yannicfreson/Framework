@@ -316,7 +316,7 @@ The design ships with placeholders. Each one is a `div` marked with the
 `placeholder` class — swap it for an `<img>` and the layout keeps its shape:
 
 - **Work** — five project images plus real titles and the meta line next to them.
-- **Team** — the portraits are in; the names under them are still `Name`.
+- **Team** — portraits are in, Yannic and Wies are named; three still read `Name`.
 - **Contact** — `hello@framework.studio` and `+32 (0)0 000 00 00` are stand-ins.
 - **Footer** — the LinkedIn link points at `#contact`.
 
