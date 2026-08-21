@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Framework — Photo stylizer</title>
+<meta name="description" content="Internal tool: engrave a photograph with the same screen the block sculptures use.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/assets/post/post.css">
+<link rel="stylesheet" href="/assets/photo/photo.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="wordmark" href="/" aria-label="Framework — home">
+    <svg class="mark" width="22" height="26" viewBox="0 0 22 26" fill="none" aria-hidden="true" focusable="false">
+      <path d="M2 25 L2 2 L21 2" stroke="currentColor" stroke-width="2.4"/>
+      <path d="M8 12 L21 12" stroke="currentColor" stroke-width="2.4"/>
+    </svg>
+    <span>Framework</span>
+  </a>
+  <span class="mono-meta">Photo stylizer</span>
+</header>
+
+<main class="pg ps">
+
+  <section class="pg__controls" aria-label="Photo settings">
+
+    <fieldset class="pg__group">
+      <legend class="eyebrow">Photos</legend>
+      <label class="ps__file">
+        <input type="file" accept="image/*" multiple data-file>
+        <span>Choose photos</span>
+      </label>
+      <p class="pg__note">Or drop them anywhere. They never leave this tab.</p>
+    </fieldset>
+
+    <fieldset class="pg__group">
+      <legend class="eyebrow">Screen</legend>
+      <div class="pg__choices" data-choices="style"></div>
+    </fieldset>
+
+    <fieldset class="pg__group">
+      <legend class="eyebrow">Ground</legend>
+      <div class="pg__choices" data-choices="theme"></div>
+    </fieldset>
+
+    <fieldset class="pg__group">
+      <legend class="eyebrow">Frame</legend>
+      <div class="pg__choices" data-choices="ratio"></div>
+    </fieldset>
+
+    <fieldset class="pg__group">
+      <legend class="eyebrow">Tone</legend>
+      <div data-sliders></div>
+      <button class="pg__reroll" type="button" data-fit>Fit levels to this photo</button>
+      <label class="ps__check">
+        <input type="checkbox" data-contour>
+        <span>Contour — ink where the tone turns a corner</span>
+      </label>
+    </fieldset>
+
+    <div class="pg__actions">
+      <button class="btn btn--solid btn--mono" type="button" data-export disabled>Export this one</button>
+      <button class="btn btn--ghost btn--mono" type="button" data-export-all disabled>Export all</button>
+      <button class="pg__reroll" type="button" data-reset>Reset the look</button>
+      <p class="pg__note" data-note role="status"></p>
+    </div>
+
+  </section>
+
+  <section class="pg__previews" aria-label="Preview">
+
+    <div class="ps__bar">
+      <span class="ps__title"><strong data-name></strong> <em data-dims></em></span>
+      <label class="ps__zoom">
+        <span class="pg__label"><span>Zoom</span> <em data-value="zoom">—</em></span>
+        <input type="range" min="100" max="400" step="1" value="100" data-zoom disabled>
+      </label>
+      <button class="pg__reroll" type="button" data-recentre>Recentre</button>
+    </div>
+
+    <div class="ps__stage" data-preview hidden>
+      <canvas data-canvas role="img" aria-label="Engraved portrait — drag to reframe"></canvas>
+      <p class="ps__hint">Drag to reframe · scroll to zoom</p>
+    </div>
+
+    <div class="ps__well" data-empty>
+      <p>Drop a photograph here.</p>
+      <p class="ps__well-note">Portraits come out engraved with the same screen the block sculptures use — a mid grey draws the same line on a cheekbone as it does on the side of a block.</p>
+    </div>
+
+    <div class="ps__strip" data-strip aria-label="Loaded photos"></div>
+
+  </section>
+
+</main>
+
+<script src="/assets/photo/state.js"></script>
+<script type="module" src="/assets/photo/app.js"></script>
+
+</body>
+</html>

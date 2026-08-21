@@ -24,6 +24,7 @@
  *   import { createSculpture, renderToDataURL } from '/assets/blocks3d.js';
  */
 import * as THREE from './vendor/three-0.185.1/three.module.min.js';
+import { INK, STYLES, DEFAULT_STYLE, scaleFor } from './engrave.js';
 
 /* ---------- Look ---------- */
 
@@ -125,13 +126,9 @@ export function supported() {
 // is cast shadow on transparent ground, 0 is empty. So a solid can be re-inked opaquely
 // while a shadow keeps its gaps and lets the page through.
 
-var STYLES = ['plain', 'cel', 'hatch', 'halftone', 'dither'];
-
-// Hatch is the house treatment: engraving lines at the same 135 degrees as the striped
-// panels the sculptures sit on, so art and backdrop share one texture. The others stay
-// available per call for a post that wants something different.
-var DEFAULT_STYLE = 'hatch';
-
+// STYLES and DEFAULT_STYLE come from engrave.js, which owns how a tone becomes ink. This
+// file owns what counts as a tone: the alpha channel above, and the outline below.
+//
 // Which treatments ink a contour unless told otherwise. Hatch is on the list because the
 // flat SVG strokes every face edge, and the two renderers have to agree.
 var OUTLINED = { cel: true, hatch: true };
@@ -154,62 +151,11 @@ var POST_FRAGMENT = [
   'uniform float uOutline;',
   'uniform vec3 uShadowInk;',
   '',
-  '// The render target is linear; thresholds read better against perceptual values.',
-  'float toSRGB(float c) {',
-  '  return c < 0.0031308 ? c * 12.92 : 1.055 * pow(c, 1.0 / 2.4) - 0.055;',
-  '}',
+  INK,
   '',
+  '// The render target is linear, so a solid arrives as light rather than as a tone.',
   'float luma(vec4 texel) {',
   '  return toSRGB(clamp(texel.r, 0.0, 1.0));',
-  '}',
-  '',
-  'float bayer8(vec2 p) {',
-  '  int x = int(mod(p.x, 8.0));',
-  '  int y = int(mod(p.y, 8.0));',
-  '  int i = y * 8 + x;',
-  '  int b = 0;',
-  '  // Bit-reversed interleave of x and y — the standard ordered-dither matrix.',
-  '  int xi = x; int yi = y;',
-  '  b += ((yi / 4) + (xi / 4) * 2) % 4 * 16;',
-  '  b += (((yi / 2) % 2) + ((xi / 2) % 2) * 2) % 4 * 4;',
-  '  b += ((yi % 2) + (xi % 2) * 2) % 4;',
-  '  return (float(b) + 0.5) / 64.0;',
-  '}',
-  '',
-  'vec2 spin(vec2 p, float a) {',
-  '  float s = sin(a); float c = cos(a);',
-  '  return vec2(p.x * c - p.y * s, p.x * s + p.y * c);',
-  '}',
-  '',
-  '// Line width grows as the tone darkens. 135 degrees, matching the stripe texture the',
-  '// panels behind these sculptures already use.',
-  'float hatchInk(float L, vec2 p) {',
-  '  float pitch = 7.0 * uScale;',
-  '  float d = mod(dot(p, vec2(0.7071, -0.7071)), pitch);',
-  '  // Capped below a full-width line, so even the cast shadow keeps its gaps and reads',
-  '  // as a dense screen rather than a flat black fill.',
-  '  float ink = step(d, min(1.0 - L, 0.80) * pitch);',
-  '  if (L < 0.34) {',
-  '    float d2 = mod(dot(p, vec2(0.7071, 0.7071)), pitch);',
-  '    ink = max(ink, step(d2, ((0.34 - L) / 0.34) * pitch * 0.9));',
-  '  }',
-  '  return ink;',
-  '}',
-  '',
-  'float halftoneInk(float L, vec2 p) {',
-  '  float cell = 8.0 * uScale;',
-  '  vec2 g = spin(p, 0.7854) / cell;',
-  '  vec2 c = fract(g) - 0.5;',
-  '  float radius = min(sqrt(clamp(1.0 - L, 0.0, 1.0)), 0.94) * 0.56;',
-  '  return step(length(c), radius);',
-  '}',
-  '',
-  'float ditherInk(float L, vec2 p) {',
-  '  return step(L, bayer8(p / max(uScale, 1.0)));',
-  '}',
-  '',
-  'float posterise(float L) {',
-  '  return floor(clamp(L, 0.0, 0.999) * 4.0) / 3.0;',
   '}',
   '',
   'float edge(vec2 uv) {',
@@ -249,16 +195,14 @@ var POST_FRAGMENT = [
   '    return;',
   '  }',
   '',
-  '  float ink = uStyle == 2 ? hatchInk(L, p)',
-  '            : uStyle == 3 ? halftoneInk(L, p)',
-  '                          : ditherInk(L, p);',
+  '  float laid = ink(uStyle, L, p, uScale);',
   '',
-  '  if (solid && uOutline > 0.0) ink = max(ink, step(0.07, edge(vUv)));',
+  '  if (solid && uOutline > 0.0) laid = max(laid, step(0.07, edge(vUv)));',
   '',
   '  // A solid re-inks opaquely onto paper white; a shadow only lays down its ink and',
   '  // leaves the gaps clear, so the ground keeps showing through the texture.',
-  '  if (solid) gl_FragColor = vec4(vec3(1.0 - ink), 1.0);',
-  '  else if (ink > 0.5) gl_FragColor = vec4(uShadowInk, src.a);',
+  '  if (solid) gl_FragColor = vec4(vec3(1.0 - laid), 1.0);',
+  '  else if (laid > 0.5) gl_FragColor = vec4(uShadowInk, src.a);',
   '  else discard;',
   '}'
 ].join('\n');
@@ -638,7 +582,7 @@ export function createSculpture(options) {
       material.uniforms.uTexel.value.set(1 / width, 1 / height);
       // Keeps a hatch line or a halftone dot the same apparent size whether this is a
       // thumbnail or a full-size post export.
-      material.uniforms.uScale.value = Math.max(1, height / 700);
+      material.uniforms.uScale.value = scaleFor(height);
       material.uniforms.uStyle.value = Math.max(0, STYLES.indexOf(style));
       material.uniforms.uOutline.value = outline ? 1.5 : 0;
       material.uniforms.uShadowInk.value.set(shadowInk[0], shadowInk[1], shadowInk[2]);

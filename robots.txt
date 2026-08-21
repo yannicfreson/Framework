@@ -1,3 +1,4 @@
 User-agent: *
 Disallow: /post-generator
+Disallow: /photo-stylizer
 Disallow: /blocks

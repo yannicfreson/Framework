@@ -1,0 +1,223 @@
+/* Framework — photo stylizer chrome.
+ *
+ * Sits on top of /assets/post/post.css: the two tools share a shell, so the layout,
+ * fieldsets, choice pills and buttons all come from there and only what is genuinely
+ * different about handling photographs is written here, `ps-` prefixed.
+ */
+
+/* ---------- Controls ---------- */
+
+.ps__file {
+  display: block;
+  position: relative;
+  border: 1px dashed var(--rule-input);
+  padding: 18px 16px;
+  text-align: center;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--body);
+  transition: border-color 0.16s var(--ease-ui), color 0.16s var(--ease-ui);
+}
+.ps__file:hover { border-color: var(--ink); color: var(--ink); }
+.ps__file input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ps__slider { gap: 4px; }
+
+/* A range input is the one control here that has to be styled from nothing: the platform
+   default carries a rounded thumb and a blue track, neither of which belongs on a page
+   made of hairlines. */
+input[type="range"] {
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  background: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 1px;
+  background: var(--rule-input);
+}
+input[type="range"]::-moz-range-track {
+  height: 1px;
+  background: var(--rule-input);
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 3px;
+  height: 15px;
+  margin-top: -7px;
+  background: var(--ink);
+  border: 0;
+  border-radius: 0;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 3px;
+  height: 15px;
+  background: var(--ink);
+  border: 0;
+  border-radius: 0;
+}
+input[type="range"]:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+input[type="range"][disabled] { opacity: 0.35; cursor: not-allowed; }
+
+.ps__check {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1.5;
+}
+.ps__check input { margin-top: 2px; accent-color: var(--ink); }
+
+/* ---------- Stage ---------- */
+
+.ps__bar {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(16px, 3vw, 36px);
+  flex-wrap: wrap;
+}
+
+.ps__title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: auto;
+}
+.ps__title strong { font-weight: 400; color: var(--ink); }
+.ps__title em { font-style: normal; opacity: 0.7; }
+
+.ps__zoom {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 180px;
+}
+
+.ps__stage {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.ps__stage canvas {
+  display: block;
+  width: 100%;
+  max-width: min(520px, 100%);
+  height: auto;
+  border: 1px solid var(--rule-strong);
+  cursor: grab;
+  touch-action: none;
+  /* The engraving is a hard black-and-white screen, so the browser's smooth downscale is
+     what keeps the lines from aliasing into moiré at preview size. */
+  image-rendering: auto;
+}
+.ps__stage canvas:active { cursor: grabbing; }
+
+.ps__hint {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ps__well {
+  border: 1px dashed var(--rule-input);
+  padding: clamp(32px, 6vw, 72px) clamp(24px, 4vw, 48px);
+  max-width: 560px;
+}
+.ps__well p { margin: 0; }
+.ps__well p:first-child {
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-weight: 300;
+  color: var(--ink);
+}
+.ps__well-note {
+  margin-top: 12px !important;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--body);
+}
+
+body.is-dropping .ps__well,
+body.is-dropping .ps__file { border-color: var(--ink); }
+
+/* ---------- Strip ---------- */
+
+.ps__strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-top: 4px;
+}
+.ps__strip:empty { display: none; }
+
+.ps__thumb {
+  position: relative;
+  width: 112px;
+}
+
+.ps__thumb-pick {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--rule-strong);
+  background: none;
+  cursor: pointer;
+  transition: border-color 0.16s var(--ease-ui);
+}
+.ps__thumb-pick canvas { display: block; width: 100%; height: auto; }
+.ps__thumb.is-on .ps__thumb-pick { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+
+.ps__thumb-drop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.16s var(--ease-ui);
+}
+.ps__thumb:hover .ps__thumb-drop,
+.ps__thumb-drop:focus-visible { opacity: 1; }
+
+.ps__thumb-name {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .ps__stage canvas { max-width: 100%; }
+  .ps__zoom { min-width: 140px; }
+}
