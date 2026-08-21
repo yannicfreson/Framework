@@ -80,7 +80,7 @@ node assets/blocks.js --composition mark --ratio auto \
 | `shadow` | `false` drops the ground shadows |
 | `yawRange` | radians, or `[from, to]` — hold the composition, shadow included, in frame right through a turn the rendered version will give it. Framing only; nothing is drawn turned |
 | `style` | `hatch` (default) or `flat` — `flat` is the plain three-tone version |
-| `padding` | fit multiplier around the geometry, default `1.16` |
+| `padding` | fit multiplier around the geometry, default `1.16` — or whatever the composition's own framing says |
 
 Output is byte-identical for identical options, so generated files diff cleanly.
 
@@ -136,12 +136,12 @@ Three things worth keeping in mind before editing it:
   hero SVG is generated with the mark's own `yawRange`; `motion.js` reads the matching
   `yawRange` and `shadowRoom: 1`. Change `TURN` in `motion.js` and the SVG has to be
   regenerated to match, or the art will visibly resize the moment the canvas takes over.
-- **`lift` counts `LIFT` steps, not modules.** A module a step and the bars fly so far
-  apart that their swinging shadows drag the frame open and shrink the letter inside it by
-  a fifth. Three fifths of a module leaves the pile at the far end of the turn every bit
-  as loose — seventy degrees does that work now — and keeps the shadows close enough to
-  frame. Raising `TURN` is the cheap way to a messier pile; raising `lift` is the
-  expensive one.
+- **A high floor is cheap, a big step is not.** `lift` counts `LIFT` steps above `FLOOR`,
+  and the two do different jobs. `FLOOR` is what holds a bar clear of its own shadow —
+  drop it and the shadow creeps back under the bar until the two read as one fused shape.
+  `LIFT` is what pulls the bars apart from each other when it turns. Only the *highest*
+  bar decides how wide the frame has to open, so raising the floor costs nothing and
+  widening the step costs the letter its size. Reach for `TURN` before `lift`.
 - **The two renderers have to agree on the camera to the last decimal.** They do now, but
   the WebGL camera used to sit at 30° elevation against the SVG's true isometric 35.26°.
   Nothing else in the set noticed the difference. This composition falls apart at it.

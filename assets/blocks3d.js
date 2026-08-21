@@ -466,7 +466,6 @@ export function createSculpture(options) {
   var theme = typeof opt.theme === 'object' ? opt.theme : (THEMES[opt.theme] || THEMES.paper);
   var boxes = boxesFor(opt.composition || 'stack', opt.seed);
   var aspect = parseRatio(opt.ratio);
-  var pad = typeof opt.padding === 'number' ? opt.padding : 1.06;
   var style = STYLES.indexOf(opt.style) >= 0 ? opt.style : DEFAULT_STYLE;
   var outline = opt.outline === true || (opt.outline !== false && OUTLINED[style] === true);
 
@@ -498,6 +497,8 @@ export function createSculpture(options) {
 
   var room = typeof opt.shadowRoom === 'number' ? opt.shadowRoom
     : (typeof framingDefaults.shadowRoom === 'number' ? framingDefaults.shadowRoom : SHADOW_ROOM);
+  var pad = typeof opt.padding === 'number' ? opt.padding
+    : (typeof framingDefaults.padding === 'number' ? framingDefaults.padding : 1.06);
   var yaws = yawSamples(opt.yawRange !== undefined ? opt.yawRange : framingDefaults.yawRange);
   var turned = turnedCorners(boxes, centre, yaws);
   var framing = withShadow ? turned.concat(floorPoints(turned, room)) : turned;

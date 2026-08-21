@@ -64,18 +64,27 @@
   var MODULE = 48;
   var JOINT = 4;   // shrink each bar off its modules, so the joints stay visible
 
-  // How far one step of `lift` pushes a bar out along the camera axis. A whole module a
-  // step is too coarse: the bars end up so far apart that their shadows swing wide as the
-  // sculpture turns, and holding all of that in frame shrinks the letter by a fifth. At
-  // three fifths of a module the pile at the far end of the turn is every bit as loose —
-  // seventy degrees does that work now — and the shadows stay near enough to frame.
-  var LIFT = Math.round(MODULE * 0.6);
+  // Every bar hangs FLOOR clear of the ground, and each step of `lift` adds another LIFT
+  // on top. The two do different jobs, and it took getting one wrong to see it.
+  //
+  // FLOOR separates a bar from its own shadow. Hang a bar too low and its shadow creeps
+  // back underneath it until the two read as one fused shape, and the mark stops looking
+  // like solids above a floor.
+  //
+  // LIFT is what pulls the bars apart from each other when the sculpture turns.
+  //
+  // Keeping the floor high and the step small buys both, because it is the *highest* bar
+  // that decides how far the frame has to open to hold its swinging shadow — and a wider
+  // frame means a smaller letter inside it. A high floor costs nothing there; a big step
+  // costs plenty.
+  var FLOOR = MODULE;
+  var LIFT = MODULE / 2;
 
   // r, u  where the run starts · len · the axis it runs along · how far out it is pushed,
-  // in LIFT steps. Neighbouring bars want lifts far apart — that difference is what the
-  // turn pulls open. What caps it is the shadow: the higher a bar hangs the further right
-  // its shadow lands, so the bars down the right-hand side stay low, or their shadows drag
-  // the frame open and shrink the letter inside it.
+  // in LIFT steps above FLOOR. Neighbouring bars want lifts far apart — that difference is
+  // what the turn pulls open. What caps it is the shadow: the higher a bar hangs the
+  // further right its shadow lands, so the bars down the right-hand side stay low, or
+  // their shadows drag the frame open and shrink the letter inside it.
   var MARK_RUNS = [
     { r: 0, u: 0, len: 3, axis: 'u', lift: 2 },  // stem, four bars bottom to top
     { r: 0, u: 3, len: 2, axis: 'u', lift: 4 },
@@ -92,7 +101,7 @@
     return MARK_RUNS.map(function (run) {
       var across = run.axis === 'r' ? run.len : 1;
       var along = run.axis === 'u' ? run.len : 1;
-      var out = run.lift * LIFT;
+      var out = FLOOR + run.lift * LIFT;
       return {
         a: out + JOINT - (run.u + along) * MODULE,
         b: out + JOINT - (run.r + across) * MODULE,
@@ -314,8 +323,11 @@
   // has to fit — so the frame is wider and the solids sit smaller than a static shot
   // would need. Anything else drawing `mark` has to frame it identically or it is
   // visibly a different sculpture. Callers may still override.
+  // `padding` belongs here too, and for the same reason: the two renderers default it
+  // differently — 1.16 flat, 1.06 rendered — so a `mark` regenerated from the CLI came out
+  // a tenth larger than the canvas drew it. One number, one place.
   var FRAMING = {
-    mark: { yawRange: [0, 1.25], shadowRoom: 1 }
+    mark: { yawRange: [0, 1.25], shadowRoom: 1, padding: 1.06 }
   };
 
   function framingFor(composition) {
@@ -395,7 +407,9 @@
     var boxes = resolve(opt.composition || 'stack', opt.seed);
     var theme = typeof opt.theme === 'object' ? opt.theme : (THEMES[opt.theme] || THEMES.paper);
     var ratio = parseRatio(opt.ratio);
-    var pad = typeof opt.padding === 'number' ? opt.padding : 1.16;
+    var pad = typeof opt.padding === 'number' ? opt.padding
+      : (typeof framingFor(opt.composition).padding === 'number'
+        ? framingFor(opt.composition).padding : 1.16);
     var withShadow = opt.shadow !== false;
     var framing = framingFor(opt.composition);
     var yawRange = opt.yawRange !== undefined ? opt.yawRange : framing.yawRange;

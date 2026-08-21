@@ -264,11 +264,9 @@
           sculpture = blocks3d.createSculpture({
             composition: 'mark',
             ratio: '1:1',
-            theme: 'paper',
-            // Just enough air for the parallax drift, without shrinking a composition
-            // that already leaves its corners empty.
-            padding: 1.06
-            // yawRange and shadowRoom come from the composition's own framing.
+            theme: 'paper'
+            // padding, yawRange and shadowRoom all come from the composition's own
+            // framing, so the flat SVG and this canvas cannot drift apart.
           });
         } catch (e) {
           giveUp();
