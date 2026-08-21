@@ -320,7 +320,7 @@ edge short of the post's own crops the cast shadow along an invisible line, whic
 as a mistake rather than a bleed. `split` is the exception: its panel is a deliberate
 visual edge, so cropping there looks intended.
 
-### Three things that will bite
+### Four things that will bite
 
 - **The composition list is derived from `blocks.js`**, with a literal fallback for Node.
   A test asserts the two match, because a stale list silently resets a valid post to the
@@ -329,6 +329,12 @@ visual edge, so cropping there looks intended.
   rasterises text differently on a composited canvas than on a detached one, so a
   re-rendered export drifted from the preview by a level or two of antialiasing. Same
   canvas, no drift, and it is faster.
+- **Export writes a data URL, not an object URL.** The object-URL version revoked
+  synchronously after `click()`, which tears the blob down before the browser has read
+  it — the save then fails or loses its filename, and with it the `.png`. Chrome happened
+  to tolerate the race; other browsers do not. A data URL has no lifetime to get wrong.
+  The downloads are also spaced ~350ms apart, because browsers throttle saves fired in a
+  tight loop.
 - **Never size a preview canvas with `width:auto; height:auto` plus both `max-width` and
   `max-height`.** Chrome applies the two maxima independently instead of preserving the
   ratio, and a 1080×1350 preview came out 721×750 — a 20% horizontal stretch, so the

@@ -195,6 +195,31 @@ export async function exportRatio(ratio) {
   return shots.get(ratio).querySelector('canvas');
 }
 
+export function fileName(headline, ratio) {
+  return `framework-${slug(headline)}-${ratio.replace(':', 'x')}.png`;
+}
+
+// A data URL rather than an object URL, deliberately. The object-URL version revoked
+// synchronously after click(), which tears the blob down before the browser has read it
+// — the save then fails or loses the filename, and with it the extension. A data URL has
+// no lifetime to race: nothing to revoke, nothing to get the ordering wrong.
+function saveCanvas(canvas, filename) {
+  const link = document.createElement('a');
+  link.href = canvas.toDataURL('image/png');
+  link.download = filename;
+  link.rel = 'noopener';
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+
+  // Browsers throttle downloads fired in a tight loop, so leave a gap and let the
+  // anchor live until the save is under way.
+  return new Promise((resolve) => setTimeout(() => {
+    link.remove();
+    resolve();
+  }, 350));
+}
+
 async function exportAll() {
   const button = document.querySelector('[data-export]');
   button.disabled = true;
@@ -204,16 +229,7 @@ async function exportAll() {
   try {
     await flush();
     for (const ratio of State.RATIOS) {
-      const canvas = shots.get(ratio).querySelector('canvas');
-      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `framework-${slug(doc.headline)}-${ratio.replace(':', 'x')}.png`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
+      await saveCanvas(shots.get(ratio).querySelector('canvas'), fileName(doc.headline, ratio));
     }
   } finally {
     button.textContent = label;
