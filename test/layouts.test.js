@@ -163,3 +163,33 @@ test('the art op carries the document theme through to the renderer', () => {
     S.ratioSize('1:1'), measure);
   assert.strictEqual(ops.find((o) => o.type === 'art').theme, 'ink');
 });
+
+test('a typed newline breaks the headline where the writer put it', () => {
+  const size = S.ratioSize('1:1');
+  const headlineOf = (over) => {
+    const { ops } = L.build(doc(over), size, measure);
+    // the headline is the only multi-line text op that is not upper-cased
+    return ops.filter((op) => op.type === 'text' && op.role !== 'muted')
+      .map((op) => op.lines)
+      .find((lines) => lines.join(' ').includes('Four'));
+  };
+
+  const flowed = headlineOf({ headline: 'Four weeks to something real.' });
+  const broken = headlineOf({ headline: 'Four weeks\nto something real.' });
+
+  assert.deepStrictEqual(broken.slice(0, 2), ['Four weeks', 'to something real.']);
+  assert.notDeepStrictEqual(broken, flowed);
+});
+
+test('a blank line is kept between paragraphs but not at either end', () => {
+  const size = S.ratioSize('1:1');
+  const linesFor = (headline) => {
+    const { ops } = L.build(doc({ headline }), size, measure);
+    return ops.filter((op) => op.type === 'text' && op.role !== 'muted')
+      .map((op) => op.lines)
+      .find((lines) => lines.join(' ').includes('One'));
+  };
+
+  assert.deepStrictEqual(linesFor('One\n\nTwo'), ['One', '', 'Two']);
+  assert.deepStrictEqual(linesFor('\n\nOne\nTwo\n\n'), ['One', 'Two']);
+});

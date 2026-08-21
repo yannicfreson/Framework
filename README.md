@@ -330,6 +330,11 @@ name to `LAYOUTS` in `layouts.js`, and add the name to `LAYOUTS` in `state.js`. 
 that walks every layout at every ratio will pick it up automatically and fail if any op
 escapes the frame.
 
+The headline wraps greedily to its column, and a newline the writer typed is a hard break
+that survives into every ratio — `wrap()` splits on newlines first and wraps each paragraph
+on its own. A blank line between two paragraphs is kept; blank lines at either end are
+dropped, so a stray trailing return does not quietly eat the box's height.
+
 Sizes go through `u()`, never raw pixels — one unit is `width / 1080`. That is what gives
 1:1 and 9:16 the same optical type size. Colours are referenced by role (`bg`, `fg`,
 `muted`, `panel`, `bar`, `barFg`); `render.js` owns the hex.

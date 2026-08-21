@@ -52,18 +52,31 @@
 
   // Greedy wrap. A word wider than the column is left long — fitHeadline decides
   // whether that counts as a shrink or a clip.
+  //
+  // A newline the writer typed is a hard break, and every paragraph either side of it
+  // wraps on its own. A blank line between two paragraphs is kept, so a deliberate gap
+  // survives; blank lines at either end are not, so trailing returns left over from
+  // typing do not silently eat the box's height.
   function wrap(text, font, maxWidth, measure) {
-    var words = String(text || '').split(/\s+/).filter(Boolean);
-    if (!words.length) return [];
-
+    var paragraphs = String(text || '').split(/\r?\n/);
     var lines = [];
-    var line = words[0];
-    for (var i = 1; i < words.length; i++) {
-      var candidate = line + ' ' + words[i];
-      if (measure(candidate, font) <= maxWidth) line = candidate;
-      else { lines.push(line); line = words[i]; }
-    }
-    lines.push(line);
+
+    paragraphs.forEach(function (paragraph) {
+      var words = paragraph.split(/\s+/).filter(Boolean);
+      if (!words.length) { lines.push(''); return; }
+
+      var line = words[0];
+      for (var i = 1; i < words.length; i++) {
+        var candidate = line + ' ' + words[i];
+        if (measure(candidate, font) <= maxWidth) line = candidate;
+        else { lines.push(line); line = words[i]; }
+      }
+      lines.push(line);
+    });
+
+    while (lines.length && lines[0] === '') lines.shift();
+    while (lines.length && lines[lines.length - 1] === '') lines.pop();
+
     return lines;
   }
 
