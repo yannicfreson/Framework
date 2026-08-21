@@ -137,7 +137,7 @@ input[type="range"][disabled] { opacity: 0.35; cursor: not-allowed; }
 }
 .ps__stage canvas:active { cursor: grabbing; }
 
-/* Thirds, over the preview only — never drawn into the canvas, so the export never carries
+/* Fifths, over the preview only — never drawn into the canvas, so the export never carries
    them.
 
    Drawn twice, dark under light, the way a camera viewfinder does it. A single line cannot

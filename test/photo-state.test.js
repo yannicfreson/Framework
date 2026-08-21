@@ -81,11 +81,11 @@ test('the default frame matches the team grid on the site', () => {
 });
 
 test('the guides toggle is not part of the look', () => {
-  // The thirds overlay never reaches the export, so it has no business in the document
+  // The fifths overlay never reaches the export, so it has no business in the document
   // every photo shares — and it must survive a reset of that document.
   const d = P.defaults();
   assert.ok(!('guides' in d), 'guides leaked into the look');
-  assert.ok(!('thirds' in d), 'thirds leaked into the look');
+  assert.ok(!('grid' in d), 'grid leaked into the look');
   assert.ok(!Object.keys(P.SLIDERS).includes('guides'));
   assert.deepStrictEqual(P.normalise({ guides: false }), d);
 });

@@ -498,7 +498,7 @@ cover rectangle the renderer uses, so the photograph tracks the cursor one to on
 than at some guessed gain, and the travel on each axis is the overhang — the part of the
 photo that does not fit — which is why an axis with nothing hanging over does not move.
 
-Thirds are on by default. They are an overlay on the preview, a sibling of the canvas
+Fifths are on by default. They are an overlay on the preview, a sibling of the canvas
 rather than anything drawn into it, so an export cannot carry them — the exported bitmap
 holds exactly two tones, ink and paper, and a test says so. They are drawn twice, dark
 under light, the way a viewfinder does it: a single hairline cannot win over an engraving

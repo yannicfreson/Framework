@@ -24,7 +24,7 @@ let nextId = 1;
 
 const el = (selector) => document.querySelector(selector);
 
-// Whether the thirds are showing. Deliberately not part of the look: it changes nothing
+// Whether the fifths are showing. Deliberately not part of the look: it changes nothing
 // about the engraving and never reaches the export, so putting it in the document that
 // every photo shares would be filing a preference under the picture. Its own key, so a
 // preference about the editor survives a Reset the look.
