@@ -64,21 +64,22 @@
   var MODULE = 48;
   var JOINT = 4;   // shrink each bar off its modules, so the joints stay visible
 
-  // Every bar hangs FLOOR clear of the ground, and each step of `lift` adds another LIFT
-  // on top. The two do different jobs, and it took getting one wrong to see it.
+  // A bar at `lift: 1` hangs FLOOR clear of the ground, and every step above that adds
+  // another LIFT. The two do different jobs.
   //
-  // FLOOR separates a bar from its own shadow. Hang a bar too low and its shadow creeps
-  // back underneath it until the two read as one fused shape, and the mark stops looking
-  // like solids above a floor.
+  // FLOOR separates a bar from its own shadow. Hang one too low and the shadow creeps
+  // back underneath it until bar and shadow read as a single fused shape.
   //
-  // LIFT is what pulls the bars apart from each other when the sculpture turns.
+  // LIFT separates the bars from each other. It has to be big enough that no two of them
+  // overlap on screen at any angle of the turn — below about a module and a third they
+  // start crossing halfway round, and two solids intersecting reads as one odd shape
+  // rather than as a pile.
   //
-  // Keeping the floor high and the step small buys both, because it is the *highest* bar
-  // that decides how far the frame has to open to hold its swinging shadow — and a wider
-  // frame means a smaller letter inside it. A high floor costs nothing there; a big step
-  // costs plenty.
-  var FLOOR = MODULE;
-  var LIFT = MODULE / 2;
+  // Both are paid for in frame: the highest bar decides how far the frame must open to
+  // hold its swinging shadow, and a wider frame means a smaller letter inside it. This
+  // spacing costs the letter about a sixth of its width. It is worth it.
+  var FLOOR = MODULE * 2;
+  var LIFT = MODULE * 4 / 3;
 
   // r, u  where the run starts · len · the axis it runs along · how far out it is pushed,
   // in LIFT steps above FLOOR. Neighbouring bars want lifts far apart — that difference is
@@ -101,7 +102,7 @@
     return MARK_RUNS.map(function (run) {
       var across = run.axis === 'r' ? run.len : 1;
       var along = run.axis === 'u' ? run.len : 1;
-      var out = FLOOR + run.lift * LIFT;
+      var out = FLOOR + (run.lift - 1) * LIFT;
       return {
         a: out + JOINT - (run.u + along) * MODULE,
         b: out + JOINT - (run.r + across) * MODULE,

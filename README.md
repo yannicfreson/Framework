@@ -136,12 +136,18 @@ Three things worth keeping in mind before editing it:
   hero SVG is generated with the mark's own `yawRange`; `motion.js` reads the matching
   `yawRange` and `shadowRoom: 1`. Change `TURN` in `motion.js` and the SVG has to be
   regenerated to match, or the art will visibly resize the moment the canvas takes over.
-- **A high floor is cheap, a big step is not.** `lift` counts `LIFT` steps above `FLOOR`,
-  and the two do different jobs. `FLOOR` is what holds a bar clear of its own shadow —
-  drop it and the shadow creeps back under the bar until the two read as one fused shape.
-  `LIFT` is what pulls the bars apart from each other when it turns. Only the *highest*
-  bar decides how wide the frame has to open, so raising the floor costs nothing and
-  widening the step costs the letter its size. Reach for `TURN` before `lift`.
+- **No two blocks may share space.** That is the rule the spacing exists to satisfy, and
+  it is worth checking rather than eyeballing: the sculpture is rigid, so two blocks that
+  intersect in space intersect at *every* angle of the turn, and they read as one odd
+  fused solid rather than as two. Overlapping *silhouettes* are fine and unavoidable —
+  that is just occlusion. Intersecting volumes are not. Compare each pair's extents in
+  `a`, `b` and `z`; all three overlapping means they interpenetrate.
+- **`FLOOR` and `LIFT` do different jobs.** `FLOOR` holds a block clear of its own shadow
+  — drop it and the shadow creeps back underneath until block and shadow fuse. `LIFT`
+  holds the blocks clear of each other. Both are paid for in frame: the highest block sets
+  how wide the frame must open for its swinging shadow, and a wider frame means a smaller
+  letter. This spacing costs the letter about a quarter of its width, which is the price
+  of nothing intersecting.
 - **The two renderers have to agree on the camera to the last decimal.** They do now, but
   the WebGL camera used to sit at 30° elevation against the SVG's true isometric 35.26°.
   Nothing else in the set noticed the difference. This composition falls apart at it.
