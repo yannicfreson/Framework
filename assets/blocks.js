@@ -365,12 +365,16 @@
     return { a: (minA + maxA) / 2, b: (minB + maxB) / 2 };
   }
 
-  // Every corner of every solid at every sampled angle, and where each one lands on the
-  // floor. Shadows included: a solid hanging in mid-air throws its shadow well off to one
-  // side, and leaving that out of the frame means it gets sliced off mid-turn against
-  // nothing, in the middle of the panel. The light does not turn with the sculpture, so
-  // each angle has to cast afresh rather than rotate the last one.
-  function turnedPoints(boxes, yaws, withShadow) {
+  // Every corner of every solid at every sampled angle. Solids only, deliberately: the
+  // frame holds every block through the whole turn, and holds the cast shadow only where
+  // it falls at rest — the angle the composition is actually drawn at, already in `all`
+  // as the cast polygons. Past that the shadow is allowed off the edge.
+  //
+  // The reason is arithmetic. A block hanging in mid-air throws its shadow a long way to
+  // one side and swings it much further than it moves itself, so reserving frame for the
+  // shadow at every angle costs the letter a third of its width. No block is ever sliced;
+  // a shadow leaving the frame mid-turn is the cheaper thing to give up by a distance.
+  function turnedPoints(boxes, yaws) {
     var centre = footprintCentre(boxes);
     var points = [];
 
@@ -380,20 +384,14 @@
 
       boxes.forEach(function (box) {
         var z = box.z || 0;
-        var casts = withShadow && (box.cast || !box.z);
 
         for (var i = 0; i < 8; i++) {
           var da = (box.a + ((i & 1) ? box.da : 0)) - centre.a;
           var db = (box.b + ((i & 2) ? box.db : 0)) - centre.b;
-          var up = z + ((i & 4) ? box.h : 0);
           var a = da * cos + db * sin + centre.a;
           var b = -da * sin + db * cos + centre.b;
 
-          points.push(project(a, b, up));
-          if (casts) {
-            var t = up / LIGHT.up;
-            points.push(project(a - LIGHT.a * t, b - LIGHT.b * t, 0));
-          }
+          points.push(project(a, b, z + ((i & 4) ? box.h : 0)));
         }
       });
     });
@@ -462,7 +460,7 @@
     });
 
     // Leave room for a turn the flat version does not draw, when one is coming.
-    all = all.concat(turnedPoints(boxes, yawSamples(yawRange), withShadow));
+    all = all.concat(turnedPoints(boxes, yawSamples(yawRange)));
 
     // Fit a viewBox of the requested ratio around whatever the composition drew.
     var xs = all.map(function (p) { return p[0]; });

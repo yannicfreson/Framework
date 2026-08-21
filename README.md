@@ -129,13 +129,14 @@ Three things worth keeping in mind before editing it:
   renderer would draw no shadow at all while the WebGL one drew nine. The shadows are
   half the pleasure of it: nine slabs scattered across the floor that plainly cannot have
   been thrown by an F.
-- **Both renderers frame for the same turn, shadow included.** A bar hanging in mid-air
-  throws its shadow well off to one side, and swings it further still as the sculpture
-  turns, so the frame has to hold every solid *and* every shadow at every angle. Miss that
-  and a shadow gets sliced off mid-turn against nothing, in the middle of the panel. The
-  hero SVG is generated with the mark's own `yawRange`; `motion.js` reads the matching
-  `yawRange` and `shadowRoom: 1`. Change `TURN` in `motion.js` and the SVG has to be
-  regenerated to match, or the art will visibly resize the moment the canvas takes over.
+- **The frame holds every block through the whole turn, and the shadow only at rest.**
+  A block hanging in mid-air throws its shadow a long way to one side and swings it much
+  further than it moves itself, so reserving frame for the shadow at every angle costs the
+  letter a third of its width. It is not worth it: no block is ever sliced, the letter
+  state is complete down to its shadows, and past that a shadow is allowed off the edge
+  while the thing tumbles. Both renderers compute this identically — the hero SVG is
+  generated with the mark's own `yawRange`, `motion.js` reads the same one. Change `TURN`
+  and the SVG has to be regenerated, or the art will resize when the canvas takes over.
 - **No two blocks may share space.** That is the rule the spacing exists to satisfy, and
   it is worth checking rather than eyeballing: the sculpture is rigid, so two blocks that
   intersect in space intersect at *every* angle of the turn, and they read as one odd
@@ -146,8 +147,8 @@ Three things worth keeping in mind before editing it:
   — drop it and the shadow creeps back underneath until block and shadow fuse. `LIFT`
   holds the blocks clear of each other. Both are paid for in frame: the highest block sets
   how wide the frame must open for its swinging shadow, and a wider frame means a smaller
-  letter. This spacing costs the letter about a quarter of its width, which is the price
-  of nothing intersecting.
+  letter. This spacing costs the letter some width, which is the price of nothing
+  intersecting; framing the shadow only at rest buys most of it back.
 - **The two renderers have to agree on the camera to the last decimal.** They do now, but
   the WebGL camera used to sit at 30° elevation against the SVG's true isometric 35.26°.
   Nothing else in the set noticed the difference. This composition falls apart at it.
