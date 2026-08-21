@@ -199,28 +199,33 @@
     // frame for the same turn, which is what stops the art resizing when the canvas takes
     // over from the SVG. The regeneration command is in the README.
     var TURN = 1.25;
+    var HOLD_LOOSE = 1500;
     var HOLD_MARK = 2600;
-    var HOLD_LOOSE = 1900;
     var TURN_MS = 2200;
-    var CYCLE = HOLD_MARK + TURN_MS + HOLD_LOOSE + TURN_MS;
+    var CYCLE = HOLD_LOOSE + TURN_MS + HOLD_MARK + TURN_MS;
 
     function ease(t) {
       return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
+    // The cycle opens on the pile and resolves into the letter — that way round, because
+    // the interesting half is watching a heap of loose bars turn out to have been the
+    // mark all along, and you only get that if the heap comes first. The mark then holds
+    // longest, being the thing worth looking at, before it comes apart again.
+    //
     // Returns 0 and TURN exactly during the holds, so the render loop can idle through
     // them instead of redrawing a frame that has not changed.
     function yawAt(elapsed) {
       var t = elapsed % CYCLE;
-      if (t < HOLD_MARK) return 0;
-
-      t -= HOLD_MARK;
-      if (t < TURN_MS) return TURN * ease(t / TURN_MS);
-
-      t -= TURN_MS;
       if (t < HOLD_LOOSE) return TURN;
 
-      return TURN * (1 - ease((t - HOLD_LOOSE) / TURN_MS));
+      t -= HOLD_LOOSE;
+      if (t < TURN_MS) return TURN * (1 - ease(t / TURN_MS));
+
+      t -= TURN_MS;
+      if (t < HOLD_MARK) return 0;
+
+      return TURN * ease((t - HOLD_MARK) / TURN_MS);
     }
 
     var connection = navigator.connection;
@@ -263,7 +268,7 @@
 
         var visible = true;
         var dirty = true;
-        var yaw = 0;
+        var yaw = yawAt(0);
         var since = 0;
 
         function measure() {
@@ -288,9 +293,26 @@
           window.requestAnimationFrame(frame);
         }
 
-        holder.innerHTML = '';
+        // The SVG underneath is the mark, standing still and resolved; the canvas opens
+        // on the scattered end of the cycle. Dissolve between them rather than cutting,
+        // so the difference reads as the sculpture turning and not as the art glitching.
+        canvas.style.position = 'absolute';
+        canvas.style.inset = '0';
+        canvas.style.opacity = '0';
+        canvas.style.transition = 'opacity 600ms ease';
+
         holder.appendChild(canvas);
         measure();
+        sculpture.setYaw(yaw);
+        sculpture.render();
+        dirty = false;
+
+        window.requestAnimationFrame(function () {
+          canvas.style.opacity = '1';
+          window.setTimeout(function () {
+            if (image && image.parentNode) image.parentNode.removeChild(image);
+          }, 700);
+        });
 
         window.addEventListener('resize', measure);
         if (typeof ResizeObserver === 'function') new ResizeObserver(measure).observe(holder);
@@ -298,8 +320,8 @@
         if (typeof IntersectionObserver === 'function') {
           new IntersectionObserver(function (entries) {
             var showing = entries[0].isIntersecting;
-            // Restart the cycle on the way back in, so it is always the mark that greets
-            // you rather than whatever phase the clock happened to reach off-screen.
+            // Restart the cycle on the way back in, so the reveal plays from the top
+            // rather than dropping you into whatever phase the clock reached off-screen.
             if (showing && !visible) since = 0;
             visible = showing;
           }).observe(holder);

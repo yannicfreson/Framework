@@ -100,16 +100,21 @@ modules — and then each bar pushed a different distance out along `(1, 1, 1)`.
 
 That direction is the whole trick. The projection is true isometric, so `(1, 1, 1)` is
 the camera's own axis: a solid can travel along it as far as you like without moving a
-pixel on screen. From the angle the page opens on, the nine bars line up into the mark
+pixel on screen. From one angle, and only that one, the nine bars line up into the mark
 exactly. They are nowhere near each other. Turn the sculpture a fraction of a radian and
-the letter falls apart into a drift of loose beams, which is what `motion.js` does as the
-hero scrolls past — and puts back together on the way up.
+the letter falls apart into a drift of loose beams.
 
-`motion.js` turns it on a loop rather than off the scroll position: hold on the letter
-long enough to read it, turn seventy-odd degrees until the bars are plainly a pile
-someone tipped out, hold, turn back. The sculpture demonstrates itself while you read the headline. Reduced motion never
-gets there — the whole rendered upgrade sits behind `html.motion` — so that visitor keeps
-the flat SVG, which is the letter.
+`motion.js` turns it on a loop rather than off the scroll position, and it runs pile
+first: open on a heap of loose bars, turn seventy-odd degrees until they resolve into the
+letter, hold there longest, come apart again. That way round because the half worth
+watching is the heap turning out to have been the mark all along, and you only get that
+if the heap comes first.
+
+Which means the canvas opens on a frame the flat SVG cannot match — the SVG is always the
+resolved letter — so the swap is a 600ms dissolve rather than a cut, and reads as the
+sculpture turning instead of the art glitching. Reduced motion never reaches any of it:
+the whole rendered upgrade sits behind `html.motion`, so that visitor keeps the SVG,
+which is the letter.
 
 Three things worth keeping in mind before editing it:
 
