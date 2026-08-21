@@ -26,58 +26,58 @@
     <polygon points="128.7,-116.7 246.5,-184.7 307.4,-171.1 342.0,-151.1 224.2,-83.1 163.4,-96.7" fill="url(#fw-hatch-cast)"/>
   </g>
   <g>
-    <polygon points="-117.8,-72.0 0.0,-4.0 0.0,-52.0 -117.8,-120.0" fill="#FFFFFF"/>
+    <polygon points="0.0,-4.0 -117.8,-72.0 -117.8,-120.0 0.0,-52.0" fill="#FFFFFF"/>
     <polygon points="34.6,-24.0 0.0,-4.0 0.0,-52.0 34.6,-72.0" fill="#FFFFFF"/>
     <polygon points="-83.1,-140.0 34.6,-72.0 0.0,-52.0 -117.8,-120.0" fill="#FFFFFF"/>
-    <polygon points="-117.8,-72.0 0.0,-4.0 0.0,-52.0 -117.8,-120.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
+    <polygon points="0.0,-4.0 -117.8,-72.0 -117.8,-120.0 0.0,-52.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
     <polygon points="34.6,-24.0 0.0,-4.0 0.0,-52.0 34.6,-72.0" fill="url(#fw-hatch-right)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-83.1,-140.0 34.6,-72.0 0.0,-52.0 -117.8,-120.0" fill="url(#fw-hatch-top)" stroke="#16171A" stroke-width="1"/>
-    <polygon points="-200.9,-120.0 -124.7,-76.0 -124.7,-124.0 -200.9,-168.0" fill="#FFFFFF"/>
+    <polygon points="-124.7,-76.0 -200.9,-120.0 -200.9,-168.0 -124.7,-124.0" fill="#FFFFFF"/>
     <polygon points="-90.1,-96.0 -124.7,-76.0 -124.7,-124.0 -90.1,-144.0" fill="#FFFFFF"/>
     <polygon points="-166.3,-188.0 -90.1,-144.0 -124.7,-124.0 -200.9,-168.0" fill="#FFFFFF"/>
-    <polygon points="-200.9,-120.0 -124.7,-76.0 -124.7,-124.0 -200.9,-168.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
+    <polygon points="-124.7,-76.0 -200.9,-120.0 -200.9,-168.0 -124.7,-124.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-90.1,-96.0 -124.7,-76.0 -124.7,-124.0 -90.1,-144.0" fill="url(#fw-hatch-right)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-166.3,-188.0 -90.1,-144.0 -124.7,-124.0 -200.9,-168.0" fill="url(#fw-hatch-top)" stroke="#16171A" stroke-width="1"/>
-    <polygon points="-284.0,-168.0 -207.8,-124.0 -207.8,-172.0 -284.0,-216.0" fill="#FFFFFF"/>
+    <polygon points="-207.8,-124.0 -284.0,-168.0 -284.0,-216.0 -207.8,-172.0" fill="#FFFFFF"/>
     <polygon points="-173.2,-144.0 -207.8,-124.0 -207.8,-172.0 -173.2,-192.0" fill="#FFFFFF"/>
     <polygon points="-249.4,-236.0 -173.2,-192.0 -207.8,-172.0 -284.0,-216.0" fill="#FFFFFF"/>
-    <polygon points="-284.0,-168.0 -207.8,-124.0 -207.8,-172.0 -284.0,-216.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
+    <polygon points="-207.8,-124.0 -284.0,-168.0 -284.0,-216.0 -207.8,-172.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-173.2,-144.0 -207.8,-124.0 -207.8,-172.0 -173.2,-192.0" fill="url(#fw-hatch-right)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-249.4,-236.0 -173.2,-192.0 -207.8,-172.0 -284.0,-216.0" fill="url(#fw-hatch-top)" stroke="#16171A" stroke-width="1"/>
-    <polygon points="-367.2,-216.0 -291.0,-172.0 -291.0,-220.0 -367.2,-264.0" fill="#FFFFFF"/>
+    <polygon points="-291.0,-172.0 -367.2,-216.0 -367.2,-264.0 -291.0,-220.0" fill="#FFFFFF"/>
     <polygon points="-256.3,-192.0 -291.0,-172.0 -291.0,-220.0 -256.3,-240.0" fill="#FFFFFF"/>
     <polygon points="-332.5,-284.0 -256.3,-240.0 -291.0,-220.0 -367.2,-264.0" fill="#FFFFFF"/>
-    <polygon points="-367.2,-216.0 -291.0,-172.0 -291.0,-220.0 -367.2,-264.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
+    <polygon points="-291.0,-172.0 -367.2,-216.0 -367.2,-264.0 -291.0,-220.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-256.3,-192.0 -291.0,-172.0 -291.0,-220.0 -256.3,-240.0" fill="url(#fw-hatch-right)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-332.5,-284.0 -256.3,-240.0 -291.0,-220.0 -367.2,-264.0" fill="url(#fw-hatch-top)" stroke="#16171A" stroke-width="1"/>
-    <polygon points="-325.6,-240.0 -291.0,-220.0 -291.0,-268.0 -325.6,-288.0" fill="#FFFFFF"/>
+    <polygon points="-291.0,-220.0 -325.6,-240.0 -325.6,-288.0 -291.0,-268.0" fill="#FFFFFF"/>
     <polygon points="-214.8,-264.0 -291.0,-220.0 -291.0,-268.0 -214.8,-312.0" fill="#FFFFFF"/>
     <polygon points="-249.4,-332.0 -214.8,-312.0 -291.0,-268.0 -325.6,-288.0" fill="#FFFFFF"/>
-    <polygon points="-325.6,-240.0 -291.0,-220.0 -291.0,-268.0 -325.6,-288.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
+    <polygon points="-291.0,-220.0 -325.6,-240.0 -325.6,-288.0 -291.0,-268.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-214.8,-264.0 -291.0,-220.0 -291.0,-268.0 -214.8,-312.0" fill="url(#fw-hatch-right)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-249.4,-332.0 -214.8,-312.0 -291.0,-268.0 -325.6,-288.0" fill="url(#fw-hatch-top)" stroke="#16171A" stroke-width="1"/>
-    <polygon points="-242.5,-288.0 -207.8,-268.0 -207.8,-316.0 -242.5,-336.0" fill="#FFFFFF"/>
+    <polygon points="-207.8,-268.0 -242.5,-288.0 -242.5,-336.0 -207.8,-316.0" fill="#FFFFFF"/>
     <polygon points="-90.1,-336.0 -207.8,-268.0 -207.8,-316.0 -90.1,-384.0" fill="#FFFFFF"/>
     <polygon points="-124.7,-404.0 -90.1,-384.0 -207.8,-316.0 -242.5,-336.0" fill="#FFFFFF"/>
-    <polygon points="-242.5,-288.0 -207.8,-268.0 -207.8,-316.0 -242.5,-336.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
+    <polygon points="-207.8,-268.0 -242.5,-288.0 -242.5,-336.0 -207.8,-316.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-90.1,-336.0 -207.8,-268.0 -207.8,-316.0 -90.1,-384.0" fill="url(#fw-hatch-right)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-124.7,-404.0 -90.1,-384.0 -207.8,-316.0 -242.5,-336.0" fill="url(#fw-hatch-top)" stroke="#16171A" stroke-width="1"/>
-    <polygon points="-117.8,-360.0 -83.1,-340.0 -83.1,-388.0 -117.8,-408.0" fill="#FFFFFF"/>
+    <polygon points="-83.1,-340.0 -117.8,-360.0 -117.8,-408.0 -83.1,-388.0" fill="#FFFFFF"/>
     <polygon points="-6.9,-384.0 -83.1,-340.0 -83.1,-388.0 -6.9,-432.0" fill="#FFFFFF"/>
     <polygon points="-41.6,-452.0 -6.9,-432.0 -83.1,-388.0 -117.8,-408.0" fill="#FFFFFF"/>
-    <polygon points="-117.8,-360.0 -83.1,-340.0 -83.1,-388.0 -117.8,-408.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
+    <polygon points="-83.1,-340.0 -117.8,-360.0 -117.8,-408.0 -83.1,-388.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-6.9,-384.0 -83.1,-340.0 -83.1,-388.0 -6.9,-432.0" fill="url(#fw-hatch-right)" stroke="#16171A" stroke-width="1"/>
     <polygon points="-41.6,-452.0 -6.9,-432.0 -83.1,-388.0 -117.8,-408.0" fill="url(#fw-hatch-top)" stroke="#16171A" stroke-width="1"/>
-    <polygon points="-76.2,-192.0 -41.6,-172.0 -41.6,-220.0 -76.2,-240.0" fill="#FFFFFF"/>
+    <polygon points="-41.6,-172.0 -76.2,-192.0 -76.2,-240.0 -41.6,-220.0" fill="#FFFFFF"/>
     <polygon points="34.6,-216.0 -41.6,-172.0 -41.6,-220.0 34.6,-264.0" fill="#FFFFFF"/>
     <polygon points="0.0,-284.0 34.6,-264.0 -41.6,-220.0 -76.2,-240.0" fill="#FFFFFF"/>
-    <polygon points="-76.2,-192.0 -41.6,-172.0 -41.6,-220.0 -76.2,-240.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
+    <polygon points="-41.6,-172.0 -76.2,-192.0 -76.2,-240.0 -41.6,-220.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
     <polygon points="34.6,-216.0 -41.6,-172.0 -41.6,-220.0 34.6,-264.0" fill="url(#fw-hatch-right)" stroke="#16171A" stroke-width="1"/>
     <polygon points="0.0,-284.0 34.6,-264.0 -41.6,-220.0 -76.2,-240.0" fill="url(#fw-hatch-top)" stroke="#16171A" stroke-width="1"/>
-    <polygon points="6.9,-240.0 41.6,-220.0 41.6,-268.0 6.9,-288.0" fill="#FFFFFF"/>
+    <polygon points="41.6,-220.0 6.9,-240.0 6.9,-288.0 41.6,-268.0" fill="#FFFFFF"/>
     <polygon points="159.3,-288.0 41.6,-220.0 41.6,-268.0 159.3,-336.0" fill="#FFFFFF"/>
     <polygon points="124.7,-356.0 159.3,-336.0 41.6,-268.0 6.9,-288.0" fill="#FFFFFF"/>
-    <polygon points="6.9,-240.0 41.6,-220.0 41.6,-268.0 6.9,-288.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
+    <polygon points="41.6,-220.0 6.9,-240.0 6.9,-288.0 41.6,-268.0" fill="url(#fw-hatch-left)" stroke="#16171A" stroke-width="1"/>
     <polygon points="159.3,-288.0 41.6,-220.0 41.6,-268.0 159.3,-336.0" fill="url(#fw-hatch-right)" stroke="#16171A" stroke-width="1"/>
     <polygon points="124.7,-356.0 159.3,-336.0 41.6,-268.0 6.9,-288.0" fill="url(#fw-hatch-top)" stroke="#16171A" stroke-width="1"/>
   </g>

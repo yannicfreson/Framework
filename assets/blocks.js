@@ -210,15 +210,51 @@
     return list.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
   }
 
-  function faces(box) {
-    var a = box.a, b = box.b, z = box.z || 0;
-    var da = box.da, db = box.db, h = box.h;
-    return {
-      top: [project(a, b, z + h), project(a + da, b, z + h), project(a + da, b + db, z + h), project(a, b + db, z + h)],
-      right: [project(a + da, b, z), project(a + da, b + db, z), project(a + da, b + db, z + h), project(a + da, b, z + h)],
-      left: [project(a, b + db, z), project(a + da, b + db, z), project(a + da, b + db, z + h), project(a, b + db, z + h)],
-      ground: [project(a, b, 0), project(a + da, b, 0), project(a + da, b + db, 0), project(a, b + db, 0)]
-    };
+  // The eight corners of a solid as (a, b, up), the bottom four then the top four.
+  function corners(solid) {
+    var out = [];
+    [solid.z, solid.z + solid.h].forEach(function (up) {
+      solid.base.forEach(function (p) { out.push([p[0], p[1], up]); });
+    });
+    return out;
+  }
+
+  // The faces of a solid that are in shot, furthest first: the two sides facing the
+  // camera, then the cap.
+  //
+  // (a, b, z) is an orthonormal frame — two ground axes at right angles and up — seen
+  // down (1, 1, 1). So a vertical face is in shot when its outward normal leans towards
+  // the camera, n.a + n.b > 0, and it reads as the light or the dark side by the same key
+  // the rendered version uses. At rest that picks out the +a and +b faces, exactly the
+  // two this renderer has always drawn; turned, it picks whichever two now face the
+  // camera, which is the whole reason the test is a dot product rather than a constant.
+  function solidFaces(solid) {
+    var z = solid.z;
+    var top = z + solid.h;
+    var sides = [];
+
+    for (var i = 0; i < 4; i++) {
+      var p = solid.base[i];
+      var q = solid.base[(i + 1) % 4];
+      var n = [q[1] - p[1], p[0] - q[0]];       // outward normal of the edge p -> q
+      if (n[0] + n[1] <= 0) continue;           // facing away, or edge-on
+
+      sides.push({
+        lit: n[0] * LIGHT.a + n[1] * LIGHT.b >= 0,
+        points: [project(p[0], p[1], z), project(q[0], q[1], z), project(q[0], q[1], top), project(p[0], p[1], top)]
+      });
+    }
+
+    // Lit side, dark side, cap — the order this renderer has always laid a box down in.
+    sides.sort(function (x, y) { return (y.lit ? 1 : 0) - (x.lit ? 1 : 0); });
+    sides.push({ cap: true, points: solid.base.map(function (c) { return project(c[0], c[1], top); }) });
+    return sides;
+  }
+
+  // What the solid would cover if it were lying on the ground — the soft shadow's shape
+  // in the un-engraved theme, where a blur stands in for a cast.
+  function groundFace(solid) {
+    return solid.base.map(function (c) { return project(c[0], c[1], 0); });
   }
 
   function parseRatio(ratio) {
@@ -234,6 +270,7 @@
 
   function resolve(composition, seed) {
     if (Array.isArray(composition)) return composition;
+    if (POSES[composition]) return resolve(POSES[composition].of, seed);
     if (COMPOSITIONS[composition]) return COMPOSITIONS[composition];
     return generate(typeof seed === 'number' ? seed : 1);
   }
@@ -262,22 +299,14 @@
   // Same key light the rendered version uses, expressed in this module's (a, b, up) grid.
   var LIGHT = { a: -0.68, b: 0.30, up: 0.669 };
 
-  // Where a box lands on the ground once the key pushes it. The cast of an axis-aligned
-  // box under a directional light is a hexagon, so project all eight corners and take
-  // the hull rather than guessing at the silhouette.
-  function castPolygon(box) {
-    var z = box.z || 0;
-    var projected = [];
-
-    for (var i = 0; i < 8; i++) {
-      var a = (i & 1) ? box.a + box.da : box.a;
-      var b = (i & 2) ? box.b + box.db : box.b;
-      var up = (i & 4) ? z + box.h : z;
-      var t = up / LIGHT.up;
-      projected.push(project(a - LIGHT.a * t, b - LIGHT.b * t, 0));
-    }
-
-    return hull(projected);
+  // Where a solid lands on the ground once the key pushes it. The cast of a box under a
+  // directional light is a hexagon, so project all eight corners and take the hull rather
+  // than guessing at the silhouette.
+  function castPolygon(solid) {
+    return hull(corners(solid).map(function (c) {
+      var t = c[2] / LIGHT.up;
+      return project(c[0] - LIGHT.a * t, c[1] - LIGHT.b * t, 0);
+    }));
   }
 
   // Andrew's monotone chain.
@@ -331,7 +360,40 @@
     mark: { yawRange: [0, 1.25], shadowRoom: 0.8, padding: 1.06 }
   };
 
+  // A pose is a named composition seen from a fixed angle other than its rest angle.
+  // `mark` only collapses into the F from one angle; `mark-loose` is those same nine bars
+  // at the far end of the hero's turn, where they read as a scattered pile — the shape the
+  // hero opens on, and the one still that says "not finished yet" in the studio's own
+  // vocabulary. Same boxes, same frame, one number apart.
+  //
+  // That number is the end of `mark`'s own yaw range rather than a copy of it, so the pose
+  // is the hero's opening frame by construction and cannot drift away from it.
+  var POSES = {
+    'mark-loose': { of: 'mark', yaw: FRAMING.mark.yawRange[1] }
+  };
+
+  // The angle a composition is drawn at. Zero for everything that is not a pose.
+  function poseYaw(composition) {
+    return POSES[composition] ? POSES[composition].yaw : 0;
+  }
+
+  // Every name that can be asked for, each pose listed straight after the composition it
+  // turns, so the two ends of the hero's cycle sit side by side wherever names are offered
+  // as a choice.
+  function compositionNames() {
+    var names = [];
+    Object.keys(COMPOSITIONS).forEach(function (name) {
+      names.push(name);
+      Object.keys(POSES).forEach(function (pose) {
+        if (POSES[pose].of === name) names.push(pose);
+      });
+    });
+    return names;
+  }
+
+  // A pose frames exactly as the composition it turns does — that is the point of it.
   function framingFor(composition) {
+    if (POSES[composition]) return framingFor(POSES[composition].of);
     return FRAMING[composition] || {};
   }
 
@@ -365,23 +427,64 @@
     return { a: (minA + maxA) / 2, b: (minB + maxB) / 2 };
   }
 
-  // Where a box's corners land on the floor once the key pushes them, walked only `room`
-  // of the way out. The shadow is still *drawn* whole; this is only what the frame is
-  // asked to hold, which is why the tips of a long cast are allowed off the edge.
-  function castFraming(box, room) {
-    var z = box.z || 0;
-    var points = [];
+  // Where a solid's corners land on the floor once the key pushes them, walked only
+  // `room` of the way out. The shadow is still *drawn* whole; this is only what the frame
+  // is asked to hold, which is why the tips of a long cast are allowed off the edge.
+  function castFraming(solid, room) {
+    return corners(solid).map(function (c) {
+      var t = c[2] / LIGHT.up;
+      return project(c[0] - LIGHT.a * t * room, c[1] - LIGHT.b * t * room, c[2] * (1 - room));
+    });
+  }
 
-    for (var i = 0; i < 8; i++) {
-      var a = box.a + ((i & 1) ? box.da : 0);
-      var b = box.b + ((i & 2) ? box.db : 0);
-      var up = z + ((i & 4) ? box.h : 0);
-      var t = up / LIGHT.up;
+  // A box turned about that pivot is no longer axis-aligned, so it stops being a corner
+  // plus a size and becomes four ground corners plus a height. At rest that is the same
+  // solid written down differently, which is why one drawing path serves both.
+  function casts(solid) {
+    return solid.cast || !solid.z;
+  }
 
-      points.push(project(a - LIGHT.a * t * room, b - LIGHT.b * t * room, up * (1 - room)));
+  function poseSolids(boxes, yaw) {
+    var centre = footprintCentre(boxes);
+    var cos = Math.cos(yaw);
+    var sin = Math.sin(yaw);
+
+    // Left exact rather than merely equal at rest: a turn of zero must not nudge the
+    // coordinates through a rounding, or every composition redraws a hair off itself.
+    var turn = yaw
+      ? function (a, b) {
+        var da = a - centre.a;
+        var db = b - centre.b;
+        return [da * cos + db * sin + centre.a, -da * sin + db * cos + centre.b];
+      }
+      : function (a, b) { return [a, b]; };
+
+    var solids = boxes.map(function (box) {
+      return {
+        base: [
+          turn(box.a, box.b), turn(box.a + box.da, box.b),
+          turn(box.a + box.da, box.b + box.db), turn(box.a, box.b + box.db)
+        ],
+        z: box.z || 0,
+        h: box.h,
+        cast: box.cast
+      };
+    });
+
+    // Painter's order is hand-authored into each composition and only holds at rest, so a
+    // turned pose has to sort for itself. Depth runs along the view direction, which in
+    // this grid is simply a + b + z.
+    if (yaw) {
+      solids.sort(function (x, y) { return depth(x) - depth(y); });
     }
 
-    return points;
+    return solids;
+  }
+
+  function depth(solid) {
+    var sum = 0;
+    solid.base.forEach(function (p) { sum += p[0] + p[1]; });
+    return sum / 4 + solid.z + solid.h / 2;
   }
 
   // Every corner of every solid at every sampled angle. Solids only, deliberately: the
@@ -433,52 +536,58 @@
     var yawRange = opt.yawRange !== undefined ? opt.yawRange : framing.yawRange;
     var room = typeof opt.shadowRoom === 'number' ? opt.shadowRoom
       : (typeof framing.shadowRoom === 'number' ? framing.shadowRoom : 1);
+    var yaw = typeof opt.yaw === 'number' ? opt.yaw : poseYaw(opt.composition);
+    var solids = poseSolids(boxes, yaw);
     var hatched = opt.style !== 'flat';
     var ink = theme.ink || '#16171A';
+    var edge = hatched ? ink : theme.edge;
+    var base = hatched ? '#FFFFFF' : null;
 
     var all = [];
     var shadowParts = [];
     var solidParts = [];
 
-    boxes.forEach(function (box) {
-      var f = faces(box);
-      all = all.concat(f.top, f.left, f.right);
+    solids.forEach(function (solid) {
+      var faces = solidFaces(solid);
+      faces.forEach(function (face) { all = all.concat(face.points); });
 
       // A raised box is normally resting on the one under it, and its shadow belongs on
       // that box rather than on the floor — so by default only ground-level solids cast.
       // `cast: true` is the exception: a solid genuinely hanging over open ground.
-      if (withShadow && (box.cast || !box.z)) {
-        if (hatched) {
-          var cast = castPolygon(box);
-          all = all.concat(castFraming(box, room));
-          shadowParts.push('    <polygon points="' + points(cast) + '" fill="url(#fw-hatch-cast)"/>');
-        } else {
-          all = all.concat(f.ground);
-          shadowParts.push('    <polygon points="' + points(f.ground) + '" fill="' + theme.shadow + '"/>');
-        }
+      if (withShadow && casts(solid)) {
+        shadowParts.push(hatched
+          ? '    <polygon points="' + points(castPolygon(solid)) + '" fill="url(#fw-hatch-cast)"/>'
+          : '    <polygon points="' + points(groundFace(solid)) + '" fill="' + theme.shadow + '"/>');
       }
-
-      var fillLeft = hatched ? 'url(#fw-hatch-left)' : theme.left;
-      var fillRight = hatched ? 'url(#fw-hatch-right)' : theme.right;
-      var fillTop = hatched ? 'url(#fw-hatch-top)' : theme.top;
-      var edge = hatched ? ink : theme.edge;
-      var base = hatched ? '#FFFFFF' : null;
 
       // Hatch patterns are transparent between the lines, so a solid ground goes down
       // first — otherwise the lines of a box behind show through the one in front.
-      var under = base
-        ? '    <polygon points="' + points(f.left) + '" fill="' + base + '"/>\n' +
-          '    <polygon points="' + points(f.right) + '" fill="' + base + '"/>\n' +
-          '    <polygon points="' + points(f.top) + '" fill="' + base + '"/>\n'
-        : '';
+      var under = '';
+      var drawn = [];
 
-      solidParts.push(
-        under +
-        '    <polygon points="' + points(f.left) + '" fill="' + fillLeft + '" stroke="' + edge + '" stroke-width="1"/>\n' +
-        '    <polygon points="' + points(f.right) + '" fill="' + fillRight + '" stroke="' + edge + '" stroke-width="1"/>\n' +
-        '    <polygon points="' + points(f.top) + '" fill="' + fillTop + '" stroke="' + edge + '" stroke-width="1"/>'
-      );
+      faces.forEach(function (face) {
+        var fill = face.cap ? (hatched ? 'url(#fw-hatch-top)' : theme.top)
+          : face.lit ? (hatched ? 'url(#fw-hatch-left)' : theme.left)
+            : (hatched ? 'url(#fw-hatch-right)' : theme.right);
+
+        if (base) under += '    <polygon points="' + points(face.points) + '" fill="' + base + '"/>\n';
+        drawn.push('    <polygon points="' + points(face.points) + '" fill="' + fill +
+          '" stroke="' + edge + '" stroke-width="1"/>');
+      });
+
+      solidParts.push(under + drawn.join('\n'));
     });
+
+    // The frame holds the cast only where it falls at rest, never where a turn throws it.
+    // A block hanging in mid-air swings its shadow much further than it moves itself, so
+    // framing the swing costs the letter a third of its width — and it is why a pose comes
+    // out the same size as the composition it turns rather than shrunk to hold a shadow
+    // that has already left the frame.
+    if (withShadow) {
+      poseSolids(boxes, 0).forEach(function (solid) {
+        if (casts(solid)) all = all.concat(hatched ? castFraming(solid, room) : groundFace(solid));
+      });
+    }
 
     // Leave room for a turn the flat version does not draw, when one is coming.
     all = all.concat(turnedPoints(boxes, yawSamples(yawRange)));
@@ -528,9 +637,10 @@
     // Geometry only — blocks3d.js builds the WebGL version from the same boxes.
     boxes: resolve,
     generate: generate,
-    compositions: Object.keys(COMPOSITIONS),
+    compositions: compositionNames(),
     framing: FRAMING,
     framingFor: framingFor,
+    poseYaw: poseYaw,
     themes: Object.keys(THEMES),
     COMPOSITIONS: COMPOSITIONS,
     THEMES: THEMES

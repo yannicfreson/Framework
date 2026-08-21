@@ -22,7 +22,7 @@
   // the two in step.
   var NAMED = (typeof FrameworkBlocks !== 'undefined' && FrameworkBlocks.compositions)
     ? FrameworkBlocks.compositions.slice()
-    : ['mark', 'stack', 'row', 'tower', 'gate'];
+    : ['mark', 'mark-loose', 'stack', 'row', 'tower', 'gate'];
 
   // 'random' is deliberately appended and is deliberately absent from
   // FrameworkBlocks.compositions, which lists only the named sculptures.

@@ -488,6 +488,14 @@ export function createSculpture(options) {
   solids.position.set(-centre.x, 0, -centre.z);
   pivot.position.set(centre.x, 0, centre.z);
 
+  // A pose is a composition asked for at a fixed angle — `mark-loose` is the mark seen
+  // from the far end of the hero's turn. The angle belongs to the name, so a still of it
+  // comes out the same here as it does from the flat renderer. The hero still drives
+  // setYaw itself.
+  pivot.rotation.y = typeof opt.yaw === 'number' ? opt.yaw
+    : ((window.FrameworkBlocks && window.FrameworkBlocks.poseYaw)
+      ? window.FrameworkBlocks.poseYaw(opt.composition) : 0);
+
   var span = bounds.getSize(new THREE.Vector3()).length();
 
   // Framing defaults come from the composition itself, so every caller drawing `mark`
@@ -680,7 +688,6 @@ export function renderToDataURL(options) {
     pixelRatio: 1
   }));
 
-  if (typeof opt.yaw === 'number') sculpture.setYaw(opt.yaw);
   sculpture.render();
 
   var url = sculpture.canvas.toDataURL(opt.type || 'image/png');

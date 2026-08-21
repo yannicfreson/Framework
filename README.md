@@ -73,11 +73,12 @@ node assets/blocks.js --composition mark --ratio auto \
 
 | Option | Values |
 | --- | --- |
-| `composition` | `mark`, `stack`, `row`, `tower`, `gate`, `random`, or your own array of boxes |
+| `composition` | `mark`, `mark-loose`, `stack`, `row`, `tower`, `gate`, `random`, or your own array of boxes |
 | `ratio` | `"3:4"`, `"1:1"`, `"4:5"`, `"9:16"`, a number, or `"auto"` to keep the composition's own shape |
 | `theme` | `paper` (light ground) or `ink` (dark ground), or a palette object |
 | `seed` | integer — `random` is deterministic, so a seed always redraws the same sculpture |
 | `shadow` | `false` drops the ground shadows |
+| `yaw` | radians — turns the sculpture on the spot, overriding whatever angle the name implies |
 | `yawRange` | radians, or `[from, to]` — hold the composition, shadow included, in frame right through a turn the rendered version will give it. Framing only; nothing is drawn turned |
 | `style` | `hatch` (default) or `flat` — `flat` is the plain three-tone version |
 | `padding` | fit multiplier around the geometry, default `1.16` — or whatever the composition's own framing says |
@@ -117,6 +118,34 @@ starts it at zero opacity under `.motion`, and `motion.js` fades it in over 600m
 once it knows the canvas is not coming — no WebGL, `save-data`, the module failing, or
 five seconds gone on a slow connection. Once the canvas does mount it clears that timer
 first, so a timer about to fire cannot put the resolved mark up underneath the sculpture.
+
+### `mark-loose` — the other end of the same turn
+
+A **pose** is a named composition asked for at a fixed angle rather than at rest.
+`mark-loose` is the only one: the same nine bars as `mark`, drawn at the far end of
+`mark`'s own yaw range — the angle the hero opens on, where the letter has come apart into
+a scattered pile. It reads as the number taken from the range rather than copied out of
+it, so the still is the hero's opening frame by construction.
+
+`POSES` in `blocks.js` holds the whole of it, one line, and the rest follows: `boxes()`
+hands back the composition it turns, `framingFor()` hands back that composition's framing,
+and both renderers read the angle off the name. So the two ends of the cycle come out at
+the same scale in the same box — a post can use either without the sculpture jumping size
+against its neighbour. The post generator picks poses up automatically, since its list is
+`FrameworkBlocks.compositions`.
+
+Drawing one is what made the flat renderer general. A box off the grid is no longer a
+corner plus a size, so it carries four ground corners instead; which two of its four sides
+are in shot stops being a constant and becomes `n.a + n.b > 0`; light or dark side is the
+key vector rather than a fixed assignment; and painter's order, hand-authored into each
+composition and true only at rest, is re-sorted by depth along `a + b + z`. At rest all of
+that reduces to exactly what the renderer drew before, to the pixel.
+
+One rule the pose depends on: the frame holds the cast shadow **only where it falls at
+rest**, never where a turn throws it. A bar hanging in mid-air swings its shadow much
+further than it moves itself, so framing the swing would cost the letter a third of its
+width — and would shrink `mark-loose` to hold shadows that have already left the frame.
+`blocks3d.js` has always framed it that way; `blocks.js` now does too.
 
 The gate is a class, not a script, which is what keeps the no-JS and reduced-motion cases
 honest: `.motion` is never set for either, the hiding rule never applies, and the SVG is
