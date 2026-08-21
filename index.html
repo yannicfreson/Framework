@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Framework — Websites, social media, built on a strong framework</title>
+<meta name="description" content="Framework is a five-person build team in Brussels. Frontend, backend, DevOps, delivery and business — websites, web apps and social campaigns, from first sketch to production.">
+<meta name="theme-color" content="#F5F4F1">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://framework.studio/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Framework — one small, senior build team">
+<meta property="og:description" content="Websites, web apps and social campaigns. Five people, one contract, from first sketch to production monitoring.">
+<meta property="og:image" content="/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<script>
+  // Gate every motion state on a class, so the page is fully legible without JS
+  // and for anyone who asked their OS for less movement.
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var root = document.documentElement;
+    root.classList.add('motion');
+    // Failsafe: if motion.js never reports in, drop the class so nothing stays hidden.
+    setTimeout(function () {
+      if (!root.classList.contains('motion-ready')) root.classList.remove('motion');
+    }, 3000);
+  }
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <a class="wordmark" href="#top" data-scroll-to data-scroll-to-offset="0" aria-label="Framework — home">
+    <svg class="mark" width="22" height="26" viewBox="0 0 22 26" fill="none" aria-hidden="true" focusable="false">
+      <path d="M2 25 L2 2 L21 2" stroke="currentColor" stroke-width="2.4"/>
+      <path d="M8 12 L21 12" stroke="currentColor" stroke-width="2.4"/>
+    </svg>
+    <span>Framework</span>
+  </a>
+
+  <nav class="site-nav" id="site-nav" aria-label="Primary">
+    <a href="#studio" data-scroll-to data-scroll-to-offset="-72">Studio</a>
+    <a href="#services" data-scroll-to data-scroll-to-offset="-72">Services</a>
+    <a href="#work" data-scroll-to data-scroll-to-offset="-72">Work</a>
+    <a href="#team" data-scroll-to data-scroll-to-offset="-72">Team</a>
+  </nav>
+
+  <a class="btn btn--solid btn--mono header-cta" href="#contact" data-scroll-to data-scroll-to-offset="-72">Start a project</a>
+
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+    <span></span><span></span>
+  </button>
+</header>
+
+<main id="main">
+  <span id="top"></span>
+
+  <section class="hero reveal">
+    <div class="hero__body">
+      <div class="hero__intro">
+        <span class="mask" style="--d:0ms"><span class="eyebrow">Five people · One build team</span></span>
+        <h1>
+          <span class="mask" style="--d:80ms"><span>Websites.</span></span>
+          <span class="mask" style="--d:160ms"><span>Social media.</span></span>
+          <span class="mask" style="--d:240ms"><span>Built on a strong Framework.</span></span>
+        </h1>
+        <div class="mask" style="--d:400ms"><p class="lede">We are a small, senior crew — frontend, backend, DevOps, delivery and business. Creative projects are where we do our best work, and no two of them look alike.</p></div>
+        <div class="hero__actions mask mask--release" style="--d:500ms">
+          <div>
+            <a class="btn btn--solid" href="#contact" data-scroll-to data-scroll-to-offset="-72">Let&rsquo;s work together</a>
+            <a class="btn btn--ghost" href="#work" data-scroll-to data-scroll-to-offset="-72">See the work</a>
+          </div>
+        </div>
+      </div>
+      <ul class="hero__meta rule rule--top" style="--d:620ms">
+        <li class="mask" style="--d:660ms"><span>Est. 2026 · Brussels</span></li>
+        <li class="mask" style="--d:700ms"><span>Design → Build → Run</span></li>
+        <li class="mask" style="--d:740ms"><span>Fixed team, no handoffs</span></li>
+      </ul>
+    </div>
+    <div class="hero__figure wipe wipe--right" style="--d:120ms">
+      <div class="hero__figure-inner" data-scroll data-scroll-speed="0.03">
+        <img src="/assets/hero-blocks.svg" alt="The Framework F, formed by nine blocks that only line up from this angle" width="739" height="674" loading="eager" decoding="async">
+      </div>
+    </div>
+  </section>
+
+  <!-- Two groups ship in the markup so the CSS-only fallback loop is seamless;
+       motion.js clones more until the track is wider than the viewport. -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <div class="marquee__group"><span>Brand sites</span><span>·</span><span>Web apps</span><span>·</span><span>Social campaigns</span><span>·</span><span>Design systems</span><span>·</span><span>APIs &amp; integrations</span><span>·</span><span>Cloud &amp; CI/CD</span><span>·</span></div>
+      <div class="marquee__group"><span>Brand sites</span><span>·</span><span>Web apps</span><span>·</span><span>Social campaigns</span><span>·</span><span>Design systems</span><span>·</span><span>APIs &amp; integrations</span><span>·</span><span>Cloud &amp; CI/CD</span><span>·</span></div>
+    </div>
+  </div>
+
+  <section class="section studio reveal" id="studio" aria-labelledby="studio-h">
+    <span class="mask"><span class="eyebrow section__index">01 — Studio</span></span>
+    <div class="studio__body">
+      <h2 id="studio-h" class="h2">
+        <span class="mask" style="--d:60ms"><span>A framework is not a template. It is the</span></span>
+        <span class="mask" style="--d:130ms"><span>structure that lets every project look like itself.</span></span>
+      </h2>
+      <div class="studio__cols">
+        <div class="mask" style="--d:260ms"><p>We kept the team deliberately small: one person per discipline, all senior, all in the same room. You brief us once and the same five people carry it from first sketch to production monitoring.</p></div>
+        <div class="mask" style="--d:330ms"><p>Variation is the point. We rebuild the visual language for every client and reuse only the engineering underneath — the part nobody should have to pay for twice.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="services" aria-labelledby="services-h">
+    <div class="section__head">
+      <h2 id="services-h" class="mask"><span class="eyebrow section__index">02 — Services</span></h2>
+      <div class="mask" style="--d:80ms"><p class="section__note">Five disciplines, one contract. Take the whole stack or the piece you&rsquo;re missing.</p></div>
+    </div>
+    <ol class="services rule rule--top" style="--d:180ms">
+      <li class="service rule rule--bottom" style="--d:260ms">
+        <span class="service__num mask" style="--d:300ms"><span>001</span></span>
+        <h3 class="service__title mask" style="--d:300ms"><span>Interface &amp; frontend</span></h3>
+        <div class="mask" style="--d:340ms"><p class="service__copy">Art direction, layout systems, motion and the accessible, fast markup underneath it. Built once, in the browser, no dead comps.</p></div>
+      </li>
+      <li class="service rule rule--bottom" style="--d:340ms">
+        <span class="service__num mask" style="--d:380ms"><span>002</span></span>
+        <h3 class="service__title mask" style="--d:380ms"><span>Backend &amp; data</span></h3>
+        <div class="mask" style="--d:420ms"><p class="service__copy">APIs, editorial models, integrations with the tools you already pay for. Content structures your team can actually maintain.</p></div>
+      </li>
+      <li class="service rule rule--bottom" style="--d:420ms">
+        <span class="service__num mask" style="--d:460ms"><span>003</span></span>
+        <h3 class="service__title mask" style="--d:460ms"><span>Infrastructure &amp; run</span></h3>
+        <div class="mask" style="--d:500ms"><p class="service__copy">Pipelines, environments, observability and a launch that is boring on purpose. We stay on after go-live.</p></div>
+      </li>
+      <li class="service rule rule--bottom" style="--d:500ms">
+        <span class="service__num mask" style="--d:540ms"><span>004</span></span>
+        <h3 class="service__title mask" style="--d:540ms"><span>Delivery &amp; production</span></h3>
+        <div class="mask" style="--d:580ms"><p class="service__copy">One point of contact, weekly demos, a plan that survives contact with reality. Scope changes get priced, not argued about.</p></div>
+      </li>
+      <li class="service rule rule--bottom" style="--d:580ms">
+        <span class="service__num mask" style="--d:620ms"><span>005</span></span>
+        <h3 class="service__title mask" style="--d:620ms"><span>Social &amp; growth</span></h3>
+        <div class="mask" style="--d:660ms"><p class="service__copy">Campaign concepts, content formats and the commercial thinking that ties a launch to something you can measure.</p></div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="section reveal" id="work" aria-labelledby="work-h">
+    <div class="section__head">
+      <h2 id="work-h" class="mask"><span class="eyebrow section__index">03 — Selected work</span></h2>
+      <span class="mask" style="--d:80ms"><a class="link-mono" href="#contact" data-scroll-to data-scroll-to-offset="-72">Full portfolio on request</a></span>
+    </div>
+
+    <div class="work-grid work-grid--feature">
+      <a class="work" href="#contact" data-scroll-to data-scroll-to-offset="-72">
+        <!-- Swap .work__media for <img src="…" alt="…"> when the case study image is ready. -->
+        <div class="work__media work__media--wide placeholder wipe wipe--up" style="--d:180ms">
+          <span class="placeholder__label">[ project image — 16:10 ]</span>
+          <span class="work__hover"><span class="mono-meta">View case study</span></span>
+        </div>
+        <div class="work__caption">
+          <span class="work__title mask" style="--d:300ms"><span>Case study title</span></span>
+          <span class="mono-meta mask" style="--d:300ms"><span>Brand site · 2026</span></span>
+        </div>
+      </a>
+      <a class="work" href="#contact" data-scroll-to data-scroll-to-offset="-72">
+        <div class="work__media work__media--tall placeholder placeholder--dark wipe wipe--up" style="--d:260ms">
+          <span class="placeholder__label">[ project image — 3:4 ]</span>
+          <span class="work__hover"><span class="mono-meta">View case study</span></span>
+        </div>
+        <div class="work__caption">
+          <span class="work__title mask" style="--d:380ms"><span>Case study title</span></span>
+          <span class="mono-meta mask" style="--d:380ms"><span>Web app · 2026</span></span>
+        </div>
+      </a>
+    </div>
+
+    <div class="work-grid work-grid--trio">
+      <a class="work" href="#contact" data-scroll-to data-scroll-to-offset="-72">
+        <div class="work__media work__media--short placeholder wipe wipe--up" style="--d:420ms">
+          <span class="placeholder__label">[ image ]</span>
+          <span class="work__hover"><span class="mono-meta">View project</span></span>
+        </div>
+        <span class="work__title work__title--sm mask" style="--d:520ms"><span>Campaign title</span></span>
+      </a>
+      <a class="work" href="#contact" data-scroll-to data-scroll-to-offset="-72">
+        <div class="work__media work__media--short placeholder wipe wipe--up" style="--d:480ms">
+          <span class="placeholder__label">[ image ]</span>
+          <span class="work__hover"><span class="mono-meta">View project</span></span>
+        </div>
+        <span class="work__title work__title--sm mask" style="--d:580ms"><span>Platform title</span></span>
+      </a>
+      <a class="work" href="#contact" data-scroll-to data-scroll-to-offset="-72">
+        <div class="work__media work__media--short placeholder wipe wipe--up" style="--d:540ms">
+          <span class="placeholder__label">[ image ]</span>
+          <span class="work__hover"><span class="mono-meta">View project</span></span>
+        </div>
+        <span class="work__title work__title--sm mask" style="--d:640ms"><span>Identity title</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section section--dark reveal" id="process" aria-labelledby="process-h">
+    <span class="mask" style="--d:420ms"><span class="eyebrow section__index">04 — How we work</span></span>
+    <div class="process__body">
+      <h2 id="process-h" class="h2 h2--light">
+        <span class="mask" style="--d:480ms"><span>Four weeks to something real. Then we</span></span>
+        <span class="mask" style="--d:550ms"><span>iterate in the open until it ships.</span></span>
+      </h2>
+      <ol class="steps">
+        <li class="step rule rule--top" style="--d:660ms">
+          <span class="mono-meta mask" style="--d:700ms"><span>W1</span></span>
+          <h3 class="step__title mask" style="--d:720ms"><span>Frame</span></h3>
+          <div class="mask" style="--d:760ms"><p>Goals, audience, constraints. A one-page brief we both sign.</p></div>
+        </li>
+        <li class="step rule rule--top" style="--d:720ms">
+          <span class="mono-meta mask" style="--d:760ms"><span>W2</span></span>
+          <h3 class="step__title mask" style="--d:780ms"><span>Direction</span></h3>
+          <div class="mask" style="--d:820ms"><p>Two visual routes, built as live pages, not slides.</p></div>
+        </li>
+        <li class="step rule rule--top" style="--d:780ms">
+          <span class="mono-meta mask" style="--d:820ms"><span>W3</span></span>
+          <h3 class="step__title mask" style="--d:840ms"><span>Build</span></h3>
+          <div class="mask" style="--d:880ms"><p>Weekly demos on a real URL. Feedback goes straight into the branch.</p></div>
+        </li>
+        <li class="step rule rule--top" style="--d:840ms">
+          <span class="mono-meta mask" style="--d:880ms"><span>W4+</span></span>
+          <h3 class="step__title mask" style="--d:900ms"><span>Run</span></h3>
+          <div class="mask" style="--d:940ms"><p>Launch, monitoring, and a retainer only if you want one.</p></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section reveal" id="team" aria-labelledby="team-h">
+    <div class="section__head">
+      <h2 id="team-h" class="mask"><span class="eyebrow section__index">05 — The five</span></h2>
+      <div class="mask" style="--d:80ms"><p class="section__note">No account layer, no juniors learning on your budget. These are the people on your project.</p></div>
+    </div>
+    <ul class="team">
+      <li class="member">
+        <!-- Swap .member__photo for <img src="…" alt="…"> when portraits are ready. -->
+        <div class="member__photo placeholder wipe wipe--up" style="--d:180ms"><span class="placeholder__label">[ portrait ]</span></div>
+        <span class="member__name mask" style="--d:300ms"><span>Name</span></span>
+        <span class="mono-meta mask" style="--d:320ms"><span>Frontend</span></span>
+      </li>
+      <li class="member">
+        <div class="member__photo placeholder wipe wipe--up" style="--d:240ms"><span class="placeholder__label">[ portrait ]</span></div>
+        <span class="member__name mask" style="--d:360ms"><span>Name</span></span>
+        <span class="mono-meta mask" style="--d:380ms"><span>Backend</span></span>
+      </li>
+      <li class="member">
+        <div class="member__photo placeholder placeholder--dark wipe wipe--up" style="--d:300ms"><span class="placeholder__label">[ portrait ]</span></div>
+        <span class="member__name mask" style="--d:420ms"><span>Name</span></span>
+        <span class="mono-meta mask" style="--d:440ms"><span>DevOps</span></span>
+      </li>
+      <li class="member">
+        <div class="member__photo placeholder wipe wipe--up" style="--d:360ms"><span class="placeholder__label">[ portrait ]</span></div>
+        <span class="member__name mask" style="--d:480ms"><span>Name</span></span>
+        <span class="mono-meta mask" style="--d:500ms"><span>Project lead</span></span>
+      </li>
+      <li class="member">
+        <div class="member__photo placeholder wipe wipe--up" style="--d:420ms"><span class="placeholder__label">[ portrait ]</span></div>
+        <span class="member__name mask" style="--d:540ms"><span>Name</span></span>
+        <span class="mono-meta mask" style="--d:560ms"><span>Business &amp; sales</span></span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="section contact reveal" id="contact" aria-labelledby="contact-h">
+    <div class="contact__body">
+      <span class="mask"><span class="eyebrow section__index">06 — Contact</span></span>
+      <h2 id="contact-h" class="contact__h">
+        <span class="mask" style="--d:80ms"><span>Got something that</span></span>
+        <span class="mask" style="--d:150ms"><span>doesn&rsquo;t fit a template?</span></span>
+      </h2>
+      <div class="mask" style="--d:280ms"><p class="lede">Send a paragraph about the project. You&rsquo;ll get a real answer from one of the five within two working days.</p></div>
+    </div>
+    <div class="contact__actions">
+      <a class="contact__link contact__link--solid wipe" style="--d:340ms" href="mailto:hello@framework.studio">
+        <span>hello@framework.studio</span><span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="contact__link wipe" style="--d:420ms" href="tel:+3200000000">
+        <span>+32 (0)0 000 00 00</span><span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <span class="mono-meta contact__where mask" style="--d:520ms"><span>Brussels · Remote-friendly</span></span>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__brand">
+    <svg width="14" height="17" viewBox="0 0 22 26" fill="none" aria-hidden="true" focusable="false">
+      <path d="M2 25 L2 2 L21 2" stroke="currentColor" stroke-width="2.6"/>
+      <path d="M8 12 L21 12" stroke="currentColor" stroke-width="2.6"/>
+    </svg>
+    <span>Framework © 2026</span>
+  </div>
+  <nav class="site-footer__nav" aria-label="Footer">
+    <a href="#studio" data-scroll-to data-scroll-to-offset="-72">Studio</a>
+    <a href="#work" data-scroll-to data-scroll-to-offset="-72">Work</a>
+    <a href="#contact" data-scroll-to data-scroll-to-offset="-72">Contact</a>
+    <a href="#contact" data-scroll-to data-scroll-to-offset="-72">LinkedIn</a>
+  </nav>
+</footer>
+
+<script src="/assets/vendor/locomotive-scroll-5.0.1.min.js"></script>
+<!-- Geometry for the hero sculpture. motion.js lazily pulls in the WebGL renderer on
+     top of this once the page is idle; without it the SVG above stands on its own. -->
+<script src="/assets/blocks.js"></script>
+<script src="/assets/motion.js"></script>
+
+</body>
+</html>

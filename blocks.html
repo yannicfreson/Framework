@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Framework — block art reference</title>
+<meta name="description" content="Compositions, ratios and themes available from the fw-blocks component.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .ref { padding: 56px var(--gutter) 96px; }
+  .ref__head { display: flex; flex-direction: column; gap: 16px; margin-bottom: 48px; max-width: 640px; }
+  .ref h1 { font-size: 34px; font-weight: 400; letter-spacing: -0.02em; }
+  .ref h2 { font-size: 11px; font-weight: 400; margin: 56px 0 20px; }
+  .ref p { font-size: 16px; line-height: 1.55; color: var(--body); }
+  .ref code { font-family: var(--mono); font-size: 0.92em; }
+
+  .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+  .cell { display: flex; flex-direction: column; gap: 12px; }
+  .cell figure {
+    margin: 0;
+    background: repeating-linear-gradient(135deg, #EAE8E3 0 9px, #F1EFEB 9px 18px);
+    border: 1px solid var(--rule);
+  }
+  .cell figure.on-ink { background: var(--ink); border-color: var(--ink); }
+  .cell fw-blocks { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="wordmark" href="/" aria-label="Framework — home">
+    <svg class="mark" width="22" height="26" viewBox="0 0 22 26" fill="none" aria-hidden="true" focusable="false">
+      <path d="M2 25 L2 2 L21 2" stroke="currentColor" stroke-width="2.4"/>
+      <path d="M8 12 L21 12" stroke="currentColor" stroke-width="2.4"/>
+    </svg>
+    <span>Framework</span>
+  </a>
+  <a class="link-mono" href="/">Back to site</a>
+</header>
+
+<main class="ref">
+  <div class="ref__head">
+    <span class="eyebrow">Internal reference</span>
+    <h1>Block art</h1>
+    <p>Every sculpture here comes from one set of box coordinates in
+      <code>assets/blocks.js</code>, drawn two ways. Flat SVG via
+      <code>&lt;fw-blocks&gt;</code>, or rendered in WebGL with real cast shadows via
+      <code>&lt;fw-blocks-3d&gt;</code>, which ships hatched. Both renderers agree, so the
+      flat one stands in until three.js loads.
+      Use <code>renderToDataURL()</code> for a PNG at post size. Not linked from the
+      site; it is here for the social builder.</p>
+  </div>
+
+  <h2 class="eyebrow">Compositions · 3:4 · paper</h2>
+  <div class="grid" data-set="compositions"></div>
+
+  <h2 class="eyebrow">Compositions · 3:4 · ink</h2>
+  <div class="grid" data-set="compositions-ink"></div>
+
+  <h2 class="eyebrow">Social ratios · square, portrait, story</h2>
+  <div class="grid" data-set="ratios"></div>
+
+  <h2 class="eyebrow">Seeded — same seed, same sculpture, every time</h2>
+  <div class="grid" data-set="seeds"></div>
+
+  <h2 class="eyebrow">Rendered · WebGL · hatch, the house treatment</h2>
+  <div class="grid" data-set="three"></div>
+</main>
+
+<script src="/assets/blocks.js"></script>
+<script type="module" src="/assets/blocks3d.js"></script>
+<script>
+  (function () {
+    var RATIO_BOX = { '3:4': '75%', '1:1': '100%', '4:5': '125%', '9:16': '177.7%' };
+
+    function cell(attrs, caption, onInk, ratio) {
+      var wrap = document.createElement('div');
+      wrap.className = 'cell';
+
+      var fig = document.createElement('figure');
+      if (onInk) fig.className = 'on-ink';
+      fig.style.position = 'relative';
+      fig.style.paddingTop = RATIO_BOX[ratio] || '75%';
+
+      var art = document.createElement('fw-blocks');
+      Object.keys(attrs).forEach(function (k) { art.setAttribute(k, attrs[k]); });
+      art.style.position = 'absolute';
+      art.style.inset = '0';
+      art.style.padding = '10%';
+      fig.appendChild(art);
+
+      var label = document.createElement('span');
+      label.className = 'mono-meta';
+      label.textContent = caption;
+
+      wrap.appendChild(fig);
+      wrap.appendChild(label);
+      return wrap;
+    }
+
+    function fill(name, cells) {
+      var host = document.querySelector('[data-set="' + name + '"]');
+      cells.forEach(function (c) { host.appendChild(c); });
+    }
+
+    var names = FrameworkBlocks.compositions;
+
+    fill('compositions', names.map(function (n) {
+      return cell({ composition: n, ratio: '3:4', theme: 'paper' }, n, false, '3:4');
+    }));
+
+    fill('compositions-ink', names.map(function (n) {
+      return cell({ composition: n, ratio: '3:4', theme: 'ink' }, n + ' · ink', true, '3:4');
+    }));
+
+    fill('ratios', [
+      cell({ composition: 'row', ratio: '1:1' }, 'row · 1:1 post', false, '1:1'),
+      cell({ composition: 'stack', ratio: '4:5' }, 'stack · 4:5 post', false, '4:5'),
+      cell({ composition: 'tower', ratio: '9:16', theme: 'ink' }, 'tower · 9:16 story', true, '9:16'),
+      cell({ composition: 'gate', ratio: '1:1', theme: 'ink' }, 'gate · 1:1 · ink', true, '1:1')
+    ]);
+
+    fill('seeds', [3, 7, 12, 21, 34, 55].map(function (s) {
+      return cell({ composition: 'random', seed: String(s), ratio: '1:1' }, 'seed ' + s, false, '1:1');
+    }));
+
+    function cell3d(attrs, caption, onInk, ratio) {
+      var c = cell({}, caption, onInk, ratio);
+      var fig = c.querySelector('figure');
+      fig.removeChild(fig.firstElementChild);
+      var art = document.createElement('fw-blocks-3d');
+      Object.keys(attrs).forEach(function (k) { art.setAttribute(k, attrs[k]); });
+      art.style.position = 'absolute';
+      art.style.inset = '0';
+      art.style.display = 'block';
+      fig.appendChild(art);
+      return c;
+    }
+
+    fill('three', [
+      cell3d({ composition: 'mark', ratio: '3:4' }, 'mark · paper', false, '3:4'),
+      cell3d({ composition: 'stack', ratio: '3:4' }, 'stack · paper', false, '3:4'),
+      cell3d({ composition: 'row', ratio: '3:4' }, 'row · paper', false, '3:4'),
+      cell3d({ composition: 'tower', ratio: '3:4', theme: 'ink' }, 'tower · ink', true, '3:4'),
+      cell3d({ composition: 'gate', ratio: '3:4', theme: 'ink' }, 'gate · ink', true, '3:4'),
+      cell3d({ composition: 'random', seed: '7', ratio: '1:1' }, 'seed 7 · 1:1', false, '1:1'),
+      cell3d({ composition: 'tower', ratio: '9:16', theme: 'ink' }, 'tower · 9:16 story', true, '9:16')
+    ]);
+  })();
+</script>
+
+</body>
+</html>

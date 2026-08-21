@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Framework — Post generator</title>
+<meta name="description" content="Internal tool: compose a Framework post and export it at all three Instagram sizes.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/assets/post/post.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="wordmark" href="/" aria-label="Framework — home">
+    <svg class="mark" width="22" height="26" viewBox="0 0 22 26" fill="none" aria-hidden="true" focusable="false">
+      <path d="M2 25 L2 2 L21 2" stroke="currentColor" stroke-width="2.4"/>
+      <path d="M8 12 L21 12" stroke="currentColor" stroke-width="2.4"/>
+    </svg>
+    <span>Framework</span>
+  </a>
+  <span class="mono-meta">Post generator</span>
+</header>
+
+<main class="pg">
+
+  <section class="pg__controls" aria-label="Post settings">
+
+    <fieldset class="pg__group">
+      <legend class="eyebrow">Layout</legend>
+      <div class="pg__choices" data-choices="layout"></div>
+    </fieldset>
+
+    <fieldset class="pg__group">
+      <legend class="eyebrow">Ground</legend>
+      <div class="pg__choices" data-choices="theme"></div>
+    </fieldset>
+
+    <fieldset class="pg__group">
+      <legend class="eyebrow">Artwork</legend>
+      <div class="pg__choices" data-choices="composition"></div>
+      <button class="pg__reroll" type="button" data-reroll hidden>Re-roll seed</button>
+    </fieldset>
+
+    <fieldset class="pg__group">
+      <legend class="eyebrow">Words</legend>
+
+      <label class="pg__field">
+        <span class="pg__label">Eyebrow <em data-count="eyebrow"></em></span>
+        <input type="text" data-field="eyebrow" autocomplete="off">
+      </label>
+
+      <label class="pg__field">
+        <span class="pg__label">Headline <em data-count="headline"></em></span>
+        <textarea rows="3" data-field="headline" autocomplete="off"></textarea>
+      </label>
+
+      <label class="pg__field">
+        <span class="pg__label">Footer <em data-count="footer"></em></span>
+        <input type="text" data-field="footer" autocomplete="off">
+      </label>
+    </fieldset>
+
+    <div class="pg__actions">
+      <button class="btn btn--solid btn--mono" type="button" data-export disabled>Preparing fonts…</button>
+      <button class="btn btn--ghost btn--mono" type="button" data-share>Copy share link</button>
+      <p class="pg__note" data-share-note role="status"></p>
+    </div>
+
+  </section>
+
+  <section class="pg__previews" aria-label="Preview">
+    <div class="pg__ratios" role="radiogroup" aria-label="Enlarged ratio" data-ratios></div>
+    <div class="pg__stage" data-stage></div>
+  </section>
+
+</main>
+
+<script src="/assets/blocks.js"></script>
+<script src="/assets/post/state.js"></script>
+<script src="/assets/post/layouts.js"></script>
+<script type="module" src="/assets/post/app.js"></script>
+
+</body>
+</html>

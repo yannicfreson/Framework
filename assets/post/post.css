@@ -1,0 +1,235 @@
+/* Framework — post generator chrome.
+ *
+ * The editor around the post, not the post itself. Tokens come from /styles.css; every
+ * class here is `pg-` prefixed so nothing collides with the marketing site's rules.
+ */
+
+.pg {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) 1fr;
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+  padding: clamp(24px, 4vw, 48px) var(--gutter) 96px;
+}
+
+/* ---------- Controls ---------- */
+
+.pg__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  position: sticky;
+  top: calc(var(--header-h) + 24px);
+}
+
+.pg__group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 20px 0 0;
+  border: 0;
+  border-top: 1px solid var(--rule-strong);
+}
+
+.pg__group legend {
+  padding: 0;
+  margin-bottom: 2px;
+}
+
+.pg__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pg__choice {
+  appearance: none;
+  border: 1px solid var(--rule-input);
+  background: none;
+  color: var(--body);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 9px 13px;
+  cursor: pointer;
+  transition: background-color 0.16s var(--ease-ui), border-color 0.16s var(--ease-ui), color 0.16s var(--ease-ui);
+}
+.pg__choice:hover { border-color: var(--ink); color: var(--ink); }
+.pg__choice[aria-checked="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--on-dark);
+}
+
+.pg__reroll {
+  align-self: flex-start;
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--rule-input);
+  cursor: pointer;
+}
+.pg__reroll:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+.pg__field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.pg__label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pg__label em {
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.pg__field input,
+.pg__field textarea {
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--surface, #fff);
+  border: 1px solid var(--rule-input);
+  border-radius: 0;
+  padding: 11px 13px;
+  resize: vertical;
+}
+.pg__field input:focus,
+.pg__field textarea:focus { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.pg__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  border-top: 1px solid var(--rule-strong);
+  padding-top: 20px;
+}
+.pg__actions .btn { justify-content: center; width: 100%; }
+.pg__actions .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+.pg__note {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-height: 1.2em;
+}
+
+/* ---------- Previews ---------- */
+
+.pg__previews {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.pg__ratios { display: flex; gap: 8px; }
+
+.pg__stage {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: start;
+}
+
+.pg__shot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pg__shot {
+  /* Set from the backing store in app.js, so the box can never disagree with the
+     bitmap it holds. */
+  --ar: 0.8;
+}
+
+.pg__shot canvas {
+  display: block;
+  aspect-ratio: var(--ar);
+
+  /* Cap the WIDTH by what keeps the height on screen, rather than capping both axes.
+     With width:auto and both max-width and max-height set, Chrome applies each
+     independently and squashes one axis — a 1080x1350 preview came out 721x750, a 20%
+     horizontal stretch, so the artwork was warped in the very view you compose against.
+     Constraining one axis and deriving the other cannot do that. */
+  width: min(100%, calc((100vh - 250px) * var(--ar)));
+  height: auto;
+
+  /* Belt and braces: if the box is ever wrong again, letterbox rather than warp.
+     Ugly is recoverable, distorted artwork is not. */
+  object-fit: contain;
+
+  border: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.pg__shot--minor { width: clamp(110px, 14vw, 168px); }
+.pg__shot--minor canvas { width: 100%; }
+.pg__shot--minor .pg__caption span:last-child { display: none; }
+
+.pg__caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* A clipped headline has to be visible next to the ratio it breaks in — this is the
+   backup to seeing all three at once, not the primary signal. */
+.pg__warning {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: rgba(22, 23, 26, 0.07);
+  padding: 5px 8px;
+  min-height: 1em;
+}
+.pg__warning:empty { display: none; }
+
+.pg__minors {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+@media (max-width: 900px) {
+  .pg { grid-template-columns: 1fr; }
+  .pg__controls { position: static; }
+  .pg__stage { grid-template-columns: 1fr; }
+  .pg__minors { flex-direction: row; }
+  .pg__shot--minor { width: clamp(96px, 26vw, 150px); }
+}
