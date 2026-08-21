@@ -111,10 +111,17 @@ watching is the heap turning out to have been the mark all along, and you only g
 if the heap comes first.
 
 Which means the canvas opens on a frame the flat SVG cannot match — the SVG is always the
-resolved letter — so the swap is a 600ms dissolve rather than a cut, and reads as the
-sculpture turning instead of the art glitching. Reduced motion never reaches any of it:
-the whole rendered upgrade sits behind `html.motion`, so that visitor keeps the SVG,
-which is the letter.
+resolved letter. Showing the SVG first and swapping would flash the letter and snap it
+apart, which reads as a fault rather than a reveal, so the SVG is held back: `styles.css`
+starts it at zero opacity under `.motion`, and `motion.js` fades it in over 600ms only
+once it knows the canvas is not coming — no WebGL, `save-data`, the module failing, or
+five seconds gone on a slow connection. Once the canvas does mount it clears that timer
+first, so a timer about to fire cannot put the resolved mark up underneath the sculpture.
+
+The gate is a class, not a script, which is what keeps the no-JS and reduced-motion cases
+honest: `.motion` is never set for either, the hiding rule never applies, and the SVG is
+simply there. It stays in the accessibility tree the whole time it is invisible, and is
+removed only after the canvas has faded in and taken over its label.
 
 Three things worth keeping in mind before editing it:
 

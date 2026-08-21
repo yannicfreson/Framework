@@ -228,14 +228,36 @@
       return TURN * ease((t - HOLD_MARK) / TURN_MS);
     }
 
+    // The flat SVG is the resolved mark; the canvas opens on the scattered end of the
+    // cycle. Show the SVG first and the hero flashes the letter and then snaps it apart,
+    // which reads as a fault rather than a reveal. So the SVG is held back — styles.css
+    // starts it at zero opacity whenever motion is on — and fades in only once we know
+    // the canvas is not coming: no WebGL, save-data, the module failing, or five seconds
+    // gone on a slow connection.
+    var FALLBACK_AFTER = 5000;
+    var fallback = document.querySelector('.hero__figure img');
+    var rendering = false;
+
+    function showFallback() {
+      if (rendering || !fallback) return;
+      fallback.classList.add('is-in');
+    }
+
+    var fallbackTimer = window.setTimeout(showFallback, FALLBACK_AFTER);
+
+    function giveUp() {
+      window.clearTimeout(fallbackTimer);
+      showFallback();
+    }
+
     var connection = navigator.connection;
-    if (connection && connection.saveData) return;
+    if (connection && connection.saveData) { giveUp(); return; }
 
     var idle = window.requestIdleCallback || function (fn) { return window.setTimeout(fn, 400); };
 
     idle(function () {
       import('/assets/blocks3d.js').then(function (blocks3d) {
-        if (!blocks3d.supported()) return;
+        if (!blocks3d.supported()) { giveUp(); return; }
 
         var sculpture;
         try {
@@ -254,6 +276,7 @@
             shadowRoom: 1
           });
         } catch (e) {
+          giveUp();
           return;
         }
 
@@ -293,9 +316,13 @@
           window.requestAnimationFrame(frame);
         }
 
-        // The SVG underneath is the mark, standing still and resolved; the canvas opens
-        // on the scattered end of the cycle. Dissolve between them rather than cutting,
-        // so the difference reads as the sculpture turning and not as the art glitching.
+        // Claim the fallback before anything is on screen, so a five-second timer that is
+        // about to fire does not put the resolved mark up underneath the sculpture.
+        rendering = true;
+        window.clearTimeout(fallbackTimer);
+
+        // Paint the opening frame before fading in, or the panel shows an empty box for
+        // as long as the first render takes.
         canvas.style.position = 'absolute';
         canvas.style.inset = '0';
         canvas.style.opacity = '0';
@@ -328,9 +355,7 @@
         }
 
         window.requestAnimationFrame(frame);
-      }).catch(function () {
-        /* SVG stays. */
-      });
+      }).catch(giveUp);
     });
   })();
 })();

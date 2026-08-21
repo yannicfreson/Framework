@@ -385,6 +385,21 @@ html.motion .reveal.is-done .wipe { clip-path: none; }
   object-fit: contain;
 }
 
+/* The rendered sculpture opens on the scattered end of its cycle, which is a frame the
+   flat SVG cannot match — it is always the resolved mark. Showing the SVG first and then
+   swapping would flash the letter and snap it apart. So with motion on the SVG waits,
+   hidden but still in the accessibility tree, and motion.js fades it in only once it
+   knows the canvas is not coming: no WebGL, or five seconds gone. Without JS, or under
+   reduced motion, the class is never set and the SVG is simply there. */
+.motion .hero__figure img {
+  opacity: 0;
+}
+
+.motion .hero__figure img.is-in {
+  opacity: 1;
+  transition: opacity 600ms ease;
+}
+
 /* ---------- Marquee ---------- */
 
 .marquee {
