@@ -308,6 +308,20 @@
 
   /* ---------- Framing for a turn ---------- */
 
+  // How a composition wants to be framed, when that is a property of the sculpture
+  // rather than of whoever is drawing it. `mark` is the case: it only reads as the F
+  // from one angle, the hero turns it through this range, and every frame of that turn
+  // has to fit — so the frame is wider and the solids sit smaller than a static shot
+  // would need. Anything else drawing `mark` has to frame it identically or it is
+  // visibly a different sculpture. Callers may still override.
+  var FRAMING = {
+    mark: { yawRange: [0, 1.25], shadowRoom: 1 }
+  };
+
+  function framingFor(composition) {
+    return FRAMING[composition] || {};
+  }
+
   // The rendered version can turn a composition on the spot, and `mark` exists to be
   // turned. If the flat renderer framed only the angle it draws, the canvas would have to
   // open its frame wider to keep the far end of the turn in shot — and every solid would
@@ -383,6 +397,8 @@
     var ratio = parseRatio(opt.ratio);
     var pad = typeof opt.padding === 'number' ? opt.padding : 1.16;
     var withShadow = opt.shadow !== false;
+    var framing = framingFor(opt.composition);
+    var yawRange = opt.yawRange !== undefined ? opt.yawRange : framing.yawRange;
     var hatched = opt.style !== 'flat';
     var ink = theme.ink || '#16171A';
 
@@ -431,7 +447,7 @@
     });
 
     // Leave room for a turn the flat version does not draw, when one is coming.
-    all = all.concat(turnedPoints(boxes, yawSamples(opt.yawRange), withShadow));
+    all = all.concat(turnedPoints(boxes, yawSamples(yawRange), withShadow));
 
     // Fit a viewBox of the requested ratio around whatever the composition drew.
     var xs = all.map(function (p) { return p[0]; });
@@ -479,6 +495,8 @@
     boxes: resolve,
     generate: generate,
     compositions: Object.keys(COMPOSITIONS),
+    framing: FRAMING,
+    framingFor: framingFor,
     themes: Object.keys(THEMES),
     COMPOSITIONS: COMPOSITIONS,
     THEMES: THEMES

@@ -488,8 +488,17 @@ export function createSculpture(options) {
   pivot.position.set(centre.x, 0, centre.z);
 
   var span = bounds.getSize(new THREE.Vector3()).length();
-  var room = typeof opt.shadowRoom === 'number' ? opt.shadowRoom : SHADOW_ROOM;
-  var yaws = yawSamples(opt.yawRange);
+
+  // Framing defaults come from the composition itself, so every caller drawing `mark`
+  // frames it the same way without having to know the numbers. The hero and the post
+  // generator drifted apart precisely because those numbers lived at the call site.
+  var framingDefaults = (window.FrameworkBlocks && window.FrameworkBlocks.framingFor)
+    ? window.FrameworkBlocks.framingFor(opt.composition)
+    : {};
+
+  var room = typeof opt.shadowRoom === 'number' ? opt.shadowRoom
+    : (typeof framingDefaults.shadowRoom === 'number' ? framingDefaults.shadowRoom : SHADOW_ROOM);
+  var yaws = yawSamples(opt.yawRange !== undefined ? opt.yawRange : framingDefaults.yawRange);
   var turned = turnedCorners(boxes, centre, yaws);
   var framing = withShadow ? turned.concat(floorPoints(turned, room)) : turned;
 

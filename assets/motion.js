@@ -195,10 +195,10 @@
     // is gone within a fraction of a radian, but it takes about seventy degrees before
     // the bars read as a pile someone tipped out rather than a mark seen off-axis.
     //
-    // Keep TURN in step with the --yaw-range the hero SVG is generated at: both renderers
-    // frame for the same turn, which is what stops the art resizing when the canvas takes
-    // over from the SVG. The regeneration command is in the README.
-    var TURN = 1.25;
+    // The turn the mark is framed for is a property of the composition, declared once in
+    // blocks.js. Read it from there rather than restating it: when this number lived at
+    // the call site, the post generator drew the same mark at a different size.
+    var TURN = (window.FrameworkBlocks && window.FrameworkBlocks.framingFor('mark').yawRange || [0, 1.25])[1];
     var HOLD_LOOSE = 1500;
     var HOLD_MARK = 2600;
     var TURN_MS = 2200;
@@ -267,13 +267,8 @@
             theme: 'paper',
             // Just enough air for the parallax drift, without shrinking a composition
             // that already leaves its corners empty.
-            padding: 1.06,
-            // Frame for the whole turn, so nothing is cropped at the far end of it, and
-            // make room for the full cast rather than the default crop — the flat SVG
-            // draws every shadow whole, and the two have to be the same size when the
-            // canvas takes over from it.
-            yawRange: [0, TURN],
-            shadowRoom: 1
+            padding: 1.06
+            // yawRange and shadowRoom come from the composition's own framing.
           });
         } catch (e) {
           giveUp();

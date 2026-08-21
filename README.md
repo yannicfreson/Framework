@@ -66,7 +66,7 @@ FrameworkBlocks.element({ composition: 'gate' })            // live SVGElement
 ```
 
 ```sh
-node assets/blocks.js --composition mark --ratio auto --yaw-range 1.25 \
+node assets/blocks.js --composition mark --ratio auto \
   --label "The Framework F, formed by nine blocks that only line up from this angle" \
   > assets/hero-blocks.svg
 ```
@@ -133,7 +133,7 @@ Three things worth keeping in mind before editing it:
   throws its shadow well off to one side, and swings it further still as the sculpture
   turns, so the frame has to hold every solid *and* every shadow at every angle. Miss that
   and a shadow gets sliced off mid-turn against nothing, in the middle of the panel. The
-  hero SVG is generated with `--yaw-range 1.25`; `motion.js` passes the matching
+  hero SVG is generated with the mark's own `yawRange`; `motion.js` reads the matching
   `yawRange` and `shadowRoom: 1`. Change `TURN` in `motion.js` and the SVG has to be
   regenerated to match, or the art will visibly resize the moment the canvas takes over.
 - **`lift` counts `LIFT` steps, not modules.** A module a step and the bars fly so far
