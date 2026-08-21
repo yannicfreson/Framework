@@ -429,16 +429,30 @@ function yawSamples(range) {
 
 // Frames an orthographic camera around a set of points — or a box — in that camera's
 // own space, so an off-centre composition still sits centred in frame.
-function fitOrtho(camera, target, aspect, pad) {
-  var corners = Array.isArray(target) ? target : boxCorners(target);
+// `across` sets the frame's width and, with it, where the sculpture sits left to right;
+// `down` sets its height. They are usually the same points — pass the solids alone as
+// `across` and the solids plus their shadow as `down` when they should differ.
+//
+// They should differ whenever there is a shadow. A cast leans hard to one side and barely
+// at all downwards, so counting it across shoves the objects a fifth of the frame off to
+// the left of their own picture, while counting it down is just the composition standing
+// on its own ground.
+function fitOrtho(camera, across, down, aspect, pad) {
+  var wide = Array.isArray(across) ? across : boxCorners(across);
+  var tall = down === undefined ? wide : (Array.isArray(down) ? down : boxCorners(down));
 
   camera.updateMatrixWorld();
   var toCamera = camera.matrixWorldInverse;
   var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, maxDepth = 0;
 
-  corners.forEach(function (corner) {
+  wide.forEach(function (corner) {
     var v = corner.clone().applyMatrix4(toCamera);
     minX = Math.min(minX, v.x); maxX = Math.max(maxX, v.x);
+    maxDepth = Math.max(maxDepth, -v.z);
+  });
+
+  tall.forEach(function (corner) {
+    var v = corner.clone().applyMatrix4(toCamera);
     minY = Math.min(minY, v.y); maxY = Math.max(maxY, v.y);
     maxDepth = Math.max(maxDepth, -v.z);
   });
@@ -567,7 +581,7 @@ export function createSculpture(options) {
   lightCamera.position.copy(key.position);
   lightCamera.lookAt(key.target.position);
   lightCamera.updateMatrixWorld();
-  fitOrtho(lightCamera, shadowBounds, null, 1.05);
+  fitOrtho(lightCamera, shadowBounds, undefined, null, 1.05);
 
   var shadowCamera = key.shadow.camera;
   shadowCamera.left = lightCamera.left;
@@ -591,7 +605,7 @@ export function createSculpture(options) {
     height = Math.max(1, Math.min(MAX_PIXELS, Math.round(cssHeight * dpr)));
     canvas.width = width;
     canvas.height = height;
-    fitOrtho(camera, framing, width / height, pad);
+    fitOrtho(camera, turned, framing, width / height, pad);
 
     var resolution = shadowResolution(Math.max(width, height));
     if (key.shadow.mapSize.x !== resolution) {

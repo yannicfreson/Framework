@@ -82,6 +82,7 @@ node assets/blocks.js --composition mark --ratio auto \
 | `yawRange` | radians, or `[from, to]` — hold the composition, shadow included, in frame right through a turn the rendered version will give it. Framing only; nothing is drawn turned |
 | `style` | `hatch` (default) or `flat` — `flat` is the plain three-tone version |
 | `padding` | fit multiplier around the geometry, default `1.16` — or whatever the composition's own framing says |
+| `shadow` | `false` also drops the shadow from the framing, so the frame is the solids exactly |
 
 Output is byte-identical for identical options, so generated files diff cleanly.
 
@@ -93,6 +94,26 @@ box it rests on.
 A raised box does not throw a shadow on the floor, because a raised box is normally
 resting on the one below and its shadow belongs on *that*. `cast: true` is the exception,
 for a solid genuinely hanging over open ground.
+
+### The frame is not fitted the same way in both directions
+
+Across, the frame holds the **solids alone** and is centred on them. Down, it holds the
+solids plus as much of their cast as `shadowRoom` allows.
+
+That asymmetry is the light. The key throws a cast about `0.85` of its length sideways and
+`0.19` downwards, so letting it into the width shoves the objects well off to the left of
+their own picture — a fifth of the frame for `row`, a quarter for `gate` — while letting it
+into the height is just the composition standing on its own ground. Now the cast runs off
+the right edge instead, which is what it should have been doing all along.
+
+`mark` is the one composition this changed nothing for, and the reason is worth knowing:
+its width is already set by the blocks sweeping through the turn, which reach wider than
+its shadow does. The hero SVG regenerates byte for byte identical.
+
+One thing it does not fix. A still of `mark` still sits a few percent left of centre,
+because `mark`'s frame is sized to hold the turn and the letter is not centred within that
+envelope at rest. That is the composition's own framing doing its job — a still and the
+hero have to agree — not the shadow.
 
 ### `mark` — the hero, and the one composition that lies
 

@@ -49,3 +49,28 @@ test('every solid keeps three faces and its cast at any angle', () => {
     assert.strictEqual(casts.length, 9, `casts at yaw ${yaw}`);
   }
 });
+
+test('the frame is centred on the solids across, not on their shadow', () => {
+  // A cast leans hard to one side, so counting it in the width pushed the objects off to
+  // the left of their own picture — a fifth of the frame for `gate`.
+  for (const name of Blocks.compositions) {
+    const box = (opts) => viewBox(Blocks.svg(Object.assign(
+      { composition: name, ratio: 'auto', padding: 1 }, opts))).split(' ').map(Number);
+
+    const framed = box({});
+    const solids = box({ shadow: false });
+    const centre = (b) => b[0] + b[2] / 2;
+
+    assert.ok(Math.abs(centre(framed) - centre(solids)) < 0.2,
+      `${name}: solids sit ${(centre(solids) - centre(framed)).toFixed(0)} off centre`);
+    assert.ok(Math.abs(framed[2] - solids[2]) < 0.2, `${name}: width still holds the cast`);
+  }
+});
+
+test('the frame still holds the resting shadow downwards', () => {
+  // Only the width stopped counting the cast. Height still does, or a composition would
+  // stand on the very bottom edge of its own frame.
+  const framed = viewBox(Blocks.svg({ composition: 'gate', ratio: 'auto', padding: 1 })).split(' ').map(Number);
+  const solids = viewBox(Blocks.svg({ composition: 'gate', ratio: 'auto', padding: 1, shadow: false })).split(' ').map(Number);
+  assert.ok(framed[3] > solids[3], 'height should still make room for the cast');
+});

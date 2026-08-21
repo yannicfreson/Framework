@@ -543,13 +543,17 @@
     var edge = hatched ? ink : theme.edge;
     var base = hatched ? '#FFFFFF' : null;
 
-    var all = [];
+    // Two point sets, because the frame is not fitted the same way in both directions.
+    // `across` is the solids alone; `down` is the solids plus as much of their shadow as
+    // the frame is asked to hold.
+    var across = [];
+    var down = [];
     var shadowParts = [];
     var solidParts = [];
 
     solids.forEach(function (solid) {
       var faces = solidFaces(solid);
-      faces.forEach(function (face) { all = all.concat(face.points); });
+      faces.forEach(function (face) { across = across.concat(face.points); });
 
       // A raised box is normally resting on the one under it, and its shadow belongs on
       // that box rather than on the floor — so by default only ground-level solids cast.
@@ -583,18 +587,23 @@
     // framing the swing costs the letter a third of its width — and it is why a pose comes
     // out the same size as the composition it turns rather than shrunk to hold a shadow
     // that has already left the frame.
+    // Leave room for a turn the flat version does not draw, when one is coming.
+    across = across.concat(turnedPoints(boxes, yawSamples(yawRange)));
+
     if (withShadow) {
       poseSolids(boxes, 0).forEach(function (solid) {
-        if (casts(solid)) all = all.concat(hatched ? castFraming(solid, room) : groundFace(solid));
+        if (casts(solid)) down = down.concat(hatched ? castFraming(solid, room) : groundFace(solid));
       });
     }
+    down = down.concat(across);
 
-    // Leave room for a turn the flat version does not draw, when one is coming.
-    all = all.concat(turnedPoints(boxes, yawSamples(yawRange)));
-
-    // Fit a viewBox of the requested ratio around whatever the composition drew.
-    var xs = all.map(function (p) { return p[0]; });
-    var ys = all.map(function (p) { return p[1]; });
+    // Fit a viewBox of the requested ratio around whatever the composition drew. Width
+    // and left-to-right position come from the solids alone, so the objects sit in the
+    // middle of their own picture: a cast leans hard to one side and hardly at all
+    // downwards, and counting it across pushes them a fifth of the frame off centre.
+    // Height still holds the shadow, which there is only the composition's own ground.
+    var xs = across.map(function (p) { return p[0]; });
+    var ys = down.map(function (p) { return p[1]; });
     var minX = Math.min.apply(Math, xs), maxX = Math.max.apply(Math, xs);
     var minY = Math.min.apply(Math, ys), maxY = Math.max.apply(Math, ys);
     var cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
