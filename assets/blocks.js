@@ -64,11 +64,18 @@
   var MODULE = 48;
   var JOINT = 4;   // shrink each bar off its modules, so the joints stay visible
 
+  // How far one step of `lift` pushes a bar out along the camera axis. A whole module a
+  // step is too coarse: the bars end up so far apart that their shadows swing wide as the
+  // sculpture turns, and holding all of that in frame shrinks the letter by a fifth. At
+  // three fifths of a module the pile at the far end of the turn is every bit as loose —
+  // seventy degrees does that work now — and the shadows stay near enough to frame.
+  var LIFT = Math.round(MODULE * 0.6);
+
   // r, u  where the run starts · len · the axis it runs along · how far out it is pushed,
-  // in modules. Neighbouring bars want lifts far apart — that difference is what the turn
-  // pulls open. Two things cap it: every bar throws a real shadow, and the higher it hangs
-  // the further right that shadow lands, so the bars down the right-hand side stay low or
-  // their shadows drag the frame out and shrink the letter inside it.
+  // in LIFT steps. Neighbouring bars want lifts far apart — that difference is what the
+  // turn pulls open. What caps it is the shadow: the higher a bar hangs the further right
+  // its shadow lands, so the bars down the right-hand side stay low, or their shadows drag
+  // the frame open and shrink the letter inside it.
   var MARK_RUNS = [
     { r: 0, u: 0, len: 3, axis: 'u', lift: 2 },  // stem, four bars bottom to top
     { r: 0, u: 3, len: 2, axis: 'u', lift: 4 },
@@ -85,7 +92,7 @@
     return MARK_RUNS.map(function (run) {
       var across = run.axis === 'r' ? run.len : 1;
       var along = run.axis === 'u' ? run.len : 1;
-      var out = run.lift * MODULE;
+      var out = run.lift * LIFT;
       return {
         a: out + JOINT - (run.u + along) * MODULE,
         b: out + JOINT - (run.r + across) * MODULE,
@@ -331,13 +338,12 @@
     return { a: (minA + maxA) / 2, b: (minB + maxB) / 2 };
   }
 
-  // Every corner of every solid at every sampled angle. Solids only — the shadow is left
-  // out on purpose. A turning sculpture sweeps its shadow across the floor far further
-  // than it moves itself, and holding all of that would shrink the sculpture to a third
-  // of the frame to make room for a smear of grey. So the rule is: every solid stays in
-  // shot through the whole turn, the cast shadow is framed where it falls at rest, and
-  // past that it runs off the edge the way `shadowRoom` already lets it.
-  function turnedPoints(boxes, yaws) {
+  // Every corner of every solid at every sampled angle, and where each one lands on the
+  // floor. Shadows included: a solid hanging in mid-air throws its shadow well off to one
+  // side, and leaving that out of the frame means it gets sliced off mid-turn against
+  // nothing, in the middle of the panel. The light does not turn with the sculpture, so
+  // each angle has to cast afresh rather than rotate the last one.
+  function turnedPoints(boxes, yaws, withShadow) {
     var centre = footprintCentre(boxes);
     var points = [];
 
@@ -347,14 +353,20 @@
 
       boxes.forEach(function (box) {
         var z = box.z || 0;
+        var casts = withShadow && (box.cast || !box.z);
 
         for (var i = 0; i < 8; i++) {
           var da = (box.a + ((i & 1) ? box.da : 0)) - centre.a;
           var db = (box.b + ((i & 2) ? box.db : 0)) - centre.b;
+          var up = z + ((i & 4) ? box.h : 0);
           var a = da * cos + db * sin + centre.a;
           var b = -da * sin + db * cos + centre.b;
 
-          points.push(project(a, b, z + ((i & 4) ? box.h : 0)));
+          points.push(project(a, b, up));
+          if (casts) {
+            var t = up / LIGHT.up;
+            points.push(project(a - LIGHT.a * t, b - LIGHT.b * t, 0));
+          }
         }
       });
     });
@@ -419,7 +431,7 @@
     });
 
     // Leave room for a turn the flat version does not draw, when one is coming.
-    all = all.concat(turnedPoints(boxes, yawSamples(opt.yawRange)));
+    all = all.concat(turnedPoints(boxes, yawSamples(opt.yawRange), withShadow));
 
     // Fit a viewBox of the requested ratio around whatever the composition drew.
     var xs = all.map(function (p) { return p[0]; });

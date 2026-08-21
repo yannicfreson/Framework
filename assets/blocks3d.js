@@ -400,10 +400,9 @@ function turnedCorners(boxes, centre, yaws) {
 }
 
 // Where those points land on the floor once the key pushes them, walked `room` of the
-// way out. Used two ways, and the difference matters: the camera frame only takes the
-// shadow as it falls at rest, because a turning sculpture sweeps its shadow far further
-// than it moves itself and framing all of that would shrink the sculpture to nothing.
-// The shadow map has to cover every angle, or a bar stops casting halfway through.
+// way out. A solid hanging in mid-air throws its shadow well off to one side, so this has
+// to be in the frame at every angle or the shadow gets sliced off mid-turn against
+// nothing, in the middle of the panel.
 function floorPoints(points, room) {
   return points.map(function (point) {
     var floor = point.clone().addScaledVector(KEY, -point.y / KEY.y);
@@ -492,7 +491,7 @@ export function createSculpture(options) {
   var room = typeof opt.shadowRoom === 'number' ? opt.shadowRoom : SHADOW_ROOM;
   var yaws = yawSamples(opt.yawRange);
   var turned = turnedCorners(boxes, centre, yaws);
-  var framing = withShadow ? turned.concat(floorPoints(solidCorners(boxes), room)) : turned;
+  var framing = withShadow ? turned.concat(floorPoints(turned, room)) : turned;
 
   // The ground only ever carries shadow. A themed background is painted underneath on
   // the 2D canvas — keeping the WebGL pass transparent is what lets alpha mean

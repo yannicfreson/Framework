@@ -367,10 +367,12 @@ html.motion .reveal.is-done .wipe { clip-path: none; }
 
 /* Absolutely placed so the art scales to the panel instead of setting its height —
    a percentage max-width on the image would let it inflate the whole hero row.
-   The vertical inset is the slack the parallax drift moves inside. */
+   Full bleed: the hero sculpture turns, and a turning solid throws its shadow a long way
+   to one side, so the art needs the whole panel to move around in. Its own framing keeps
+   it clear of the edges, and the parallax drift is a couple of dozen pixels at most. */
 .hero__figure-inner {
   position: absolute;
-  inset: 9% 5%;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -806,7 +808,7 @@ html.motion .reveal.section--dark.is-in::before { transform: scaleY(1); }
     order: -1;
   }
   /* The stacked panel is too short to absorb the parallax drift — hold the art still. */
-  .hero__figure-inner { inset: 6% 8%; transform: none !important; }
+  .hero__figure-inner { transform: none !important; }
 
   .studio,
   .section--dark,

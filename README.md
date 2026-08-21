@@ -78,7 +78,7 @@ node assets/blocks.js --composition mark --ratio auto --yaw-range 1.25 \
 | `theme` | `paper` (light ground) or `ink` (dark ground), or a palette object |
 | `seed` | integer — `random` is deterministic, so a seed always redraws the same sculpture |
 | `shadow` | `false` drops the ground shadows |
-| `yawRange` | radians, or `[from, to]` — hold every solid in frame through a turn the rendered version will give this composition. Framing only, nothing is drawn turned |
+| `yawRange` | radians, or `[from, to]` — hold the composition, shadow included, in frame right through a turn the rendered version will give it. Framing only; nothing is drawn turned |
 | `style` | `hatch` (default) or `flat` — `flat` is the plain three-tone version |
 | `padding` | fit multiplier around the geometry, default `1.16` |
 
@@ -122,17 +122,19 @@ Three things worth keeping in mind before editing it:
   renderer would draw no shadow at all while the WebGL one drew nine. The shadows are
   half the pleasure of it: nine slabs scattered across the floor that plainly cannot have
   been thrown by an F.
-- **Both renderers frame for the same turn.** The bars sweep well outside their
-  standing-still frame, so the hero SVG is generated with `--yaw-range 1.25` and
-  `motion.js` passes the matching `yawRange` and `shadowRoom: 1`. Change `TURN` in
-  `motion.js` and the SVG has to be regenerated to match, or the art will visibly resize
-  the moment the canvas takes over.
-
-  What `yawRange` holds in frame is the *solids*, at every angle. Not the shadow: a
-  turning sculpture sweeps its shadow across the floor much further than it moves itself,
-  and framing all of that would shrink the sculpture to well under half the frame to make
-  room for a smear of grey. The shadow is framed where it falls at rest, and past that it
-  runs off the edge — which is what `shadowRoom` has always allowed anyway.
+- **Both renderers frame for the same turn, shadow included.** A bar hanging in mid-air
+  throws its shadow well off to one side, and swings it further still as the sculpture
+  turns, so the frame has to hold every solid *and* every shadow at every angle. Miss that
+  and a shadow gets sliced off mid-turn against nothing, in the middle of the panel. The
+  hero SVG is generated with `--yaw-range 1.25`; `motion.js` passes the matching
+  `yawRange` and `shadowRoom: 1`. Change `TURN` in `motion.js` and the SVG has to be
+  regenerated to match, or the art will visibly resize the moment the canvas takes over.
+- **`lift` counts `LIFT` steps, not modules.** A module a step and the bars fly so far
+  apart that their swinging shadows drag the frame open and shrink the letter inside it by
+  a fifth. Three fifths of a module leaves the pile at the far end of the turn every bit
+  as loose — seventy degrees does that work now — and keeps the shadows close enough to
+  frame. Raising `TURN` is the cheap way to a messier pile; raising `lift` is the
+  expensive one.
 - **The two renderers have to agree on the camera to the last decimal.** They do now, but
   the WebGL camera used to sit at 30° elevation against the SVG's true isometric 35.26°.
   Nothing else in the set noticed the difference. This composition falls apart at it.
