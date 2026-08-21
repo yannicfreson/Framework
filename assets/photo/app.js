@@ -24,6 +24,22 @@ let nextId = 1;
 
 const el = (selector) => document.querySelector(selector);
 
+// Whether the thirds are showing. Deliberately not part of the look: it changes nothing
+// about the engraving and never reaches the export, so putting it in the document that
+// every photo shares would be filing a preference under the picture. Its own key, so a
+// preference about the editor survives a Reset the look.
+const GUIDES_KEY = 'framework-photo-guides';
+
+function readGuides() {
+  try {
+    return localStorage.getItem(GUIDES_KEY) !== 'off';
+  } catch (e) {
+    return true;
+  }
+}
+
+let guides = readGuides();
+
 /* ---------- Controls ---------- */
 
 function choiceButton(value, checked, onPick) {
@@ -86,6 +102,10 @@ function syncControls() {
 
   const contour = el('[data-contour]');
   contour.checked = look.contour;
+
+  const grid = el('[data-guides]');
+  grid.setAttribute('aria-pressed', String(guides));
+  el('[data-grid]').hidden = !guides;
 
   const zoom = el('[data-zoom]');
   const current = selected();
@@ -293,6 +313,16 @@ function bindFraming() {
     }));
     update({ controls: false });
     el('[data-value="zoom"]').textContent = Math.round(photo.frame.zoom) + '%';
+  });
+
+  el('[data-guides]').addEventListener('click', () => {
+    guides = !guides;
+    try {
+      localStorage.setItem(GUIDES_KEY, guides ? 'on' : 'off');
+    } catch (e) {
+      /* private window — the toggle still works, it just does not outlive the tab */
+    }
+    syncControls();
   });
 
   el('[data-recentre]').addEventListener('click', () => {

@@ -491,6 +491,25 @@ photographed next month gets the same treatment as the first five. The **frame**
 and focal point — is per photo, because a face is never in the same place twice and
 cropping is not a look.
 
+### Framing
+
+Drag the preview to move the crop, scroll to zoom. The pointer is mapped through the same
+cover rectangle the renderer uses, so the photograph tracks the cursor one to one rather
+than at some guessed gain, and the travel on each axis is the overhang — the part of the
+photo that does not fit — which is why an axis with nothing hanging over does not move.
+
+Thirds are on by default. They are an overlay on the preview, a sibling of the canvas
+rather than anything drawn into it, so an export cannot carry them — the exported bitmap
+holds exactly two tones, ink and paper, and a test says so. They are drawn twice, dark
+under light, the way a viewfinder does it: a single hairline cannot win over an engraving
+that is solid black in one corner and bare paper in the next, and the difference blend that
+survives both extremes lands on mid grey, which is exactly the tone a half-dense hatch
+already is.
+
+The toggle is deliberately not part of the look. It changes nothing about the engraving,
+so filing it under the document every photo shares would be filing a preference under the
+picture; it keeps its own key and survives **Reset the look**.
+
 ### Levels, and why they are not exposure and contrast
 
 A block face arrives at whatever tone the key light made it, and the screen is built

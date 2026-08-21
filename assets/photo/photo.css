@@ -116,10 +116,17 @@ input[type="range"][disabled] { opacity: 0.35; cursor: not-allowed; }
   align-items: flex-start;
 }
 
+/* The frame shrink-wraps the canvas so the guides can be laid over exactly it, rather than
+   over whatever box the flex column happens to be. */
+.ps__frame {
+  position: relative;
+  width: 100%;
+  max-width: min(520px, 100%);
+}
+
 .ps__stage canvas {
   display: block;
   width: 100%;
-  max-width: min(520px, 100%);
   height: auto;
   border: 1px solid var(--rule-strong);
   cursor: grab;
@@ -129,6 +136,33 @@ input[type="range"][disabled] { opacity: 0.35; cursor: not-allowed; }
   image-rendering: auto;
 }
 .ps__stage canvas:active { cursor: grabbing; }
+
+/* Thirds, over the preview only — never drawn into the canvas, so the export never carries
+   them.
+
+   Drawn twice, dark under light, the way a camera viewfinder does it. A single line cannot
+   win here: the engraving is solid black in one corner and bare paper in the next, and the
+   difference blend that survives both extremes lands on mid grey, which is exactly the tone
+   a half-dense hatch already is. A pair reads against anything, because whichever half is
+   losing, the other is not. */
+.ps__guides {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  fill: none;
+}
+.ps__guides[hidden] { display: none; }
+
+.ps__guides-halo {
+  stroke: rgba(22, 23, 26, 0.45);
+  stroke-width: 3;
+}
+.ps__guides-line {
+  stroke: rgba(255, 255, 255, 0.8);
+  stroke-width: 1;
+}
 
 .ps__hint {
   margin: 0;

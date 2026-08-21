@@ -82,11 +82,22 @@
         <span class="pg__label"><span>Zoom</span> <em data-value="zoom">—</em></span>
         <input type="range" min="100" max="400" step="1" value="100" data-zoom disabled>
       </label>
+      <button class="pg__choice" type="button" data-guides aria-pressed="true">Thirds</button>
       <button class="pg__reroll" type="button" data-recentre>Recentre</button>
     </div>
 
     <div class="ps__stage" data-preview hidden>
-      <canvas data-canvas role="img" aria-label="Engraved portrait — drag to reframe"></canvas>
+      <div class="ps__frame">
+        <canvas data-canvas role="img" aria-label="Engraved portrait — drag to reframe"></canvas>
+        <!-- A 3-unit viewBox with no aspect correction puts the lines exactly on the
+             thirds at any frame ratio; non-scaling-stroke keeps them one hairline in both
+             directions rather than stretched to match. The path is drawn twice, dark under
+             light, the way a viewfinder does it — see photo.css. -->
+        <svg class="ps__guides" viewBox="0 0 3 3" preserveAspectRatio="none" aria-hidden="true" data-grid>
+          <path class="ps__guides-halo" d="M1 0V3M2 0V3M0 1H3M0 2H3" vector-effect="non-scaling-stroke"/>
+          <path class="ps__guides-line" d="M1 0V3M2 0V3M0 1H3M0 2H3" vector-effect="non-scaling-stroke"/>
+        </svg>
+      </div>
       <p class="ps__hint">Drag to reframe · scroll to zoom</p>
     </div>
 
