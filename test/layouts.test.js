@@ -193,3 +193,76 @@ test('a blank line is kept between paragraphs but not at either end', () => {
   assert.deepStrictEqual(linesFor('One\n\nTwo'), ['One', '', 'Two']);
   assert.deepStrictEqual(linesFor('\n\nOne\nTwo\n\n'), ['One', 'Two']);
 });
+
+test('every layout carries the eyebrow and the footer', () => {
+  // art-full used to drop both. A run of posts numbered in the eyebrow needs the number
+  // to survive whichever layout a given post happens to use.
+  for (const layout of L.LAYOUTS) {
+    for (const ratio of S.RATIOS) {
+      const { ops } = L.build(doc({ layout }), S.ratioSize(ratio), measure);
+      const drawn = ops.filter((o) => o.type === 'text').map((o) => o.lines.join(' '));
+      assert.ok(drawn.includes('FRAMEWORK'), `${layout} ${ratio}: no eyebrow`);
+      assert.ok(drawn.includes('FRAMEWORK.STUDIO'), `${layout} ${ratio}: no footer`);
+    }
+  }
+});
+
+test('an empty label is not drawn at all', () => {
+  for (const layout of L.LAYOUTS) {
+    for (const ratio of S.RATIOS) {
+      const { ops } = L.build(doc({ layout, eyebrow: '', footer: '' }), S.ratioSize(ratio), measure);
+      for (const op of ops.filter((o) => o.type === 'text')) {
+        assert.ok(op.lines.join('').trim(), `${layout} ${ratio}: blank text op`);
+      }
+    }
+  }
+});
+
+test('an empty label gives its space back rather than holding it', () => {
+  // The point of dropping the op: a post with no url should not carry a gap where the
+  // url would have been, or the run reads as if something failed to render.
+  const size = S.ratioSize('4:5');
+
+  // Three layouts hang the headline under the eyebrow, so it rises into the gap.
+  for (const layout of ['headline-above', 'split', 'statement']) {
+    const headline = (over) => L.build(doc(Object.assign({ layout }, over)), size, measure)
+      .ops.find((o) => o.type === 'text' && o.role === 'fg').y;
+    assert.ok(headline({ eyebrow: '' }) < headline({}), `${layout}: headline held the gap`);
+  }
+
+  // art-full hangs its bar off the bottom margin, so there it is the footer that frees
+  // the space and the bar that drops into it.
+  const barBottom = (over) => {
+    const ops = L.build(doc(Object.assign({ layout: 'art-full' }, over)), size, measure).ops;
+    const bar = ops.filter((o) => o.type === 'fill').pop();
+    return bar.y + bar.h;
+  };
+  assert.ok(barBottom({ footer: '' }) > barBottom({}), 'art-full: bar held the gap');
+});
+
+test('art-full keeps its bar clear of the footer', () => {
+  const size = S.ratioSize('4:5');
+  const ops = L.build(doc({ layout: 'art-full' }), size, measure).ops;
+  const bar = ops.filter((o) => o.type === 'fill').pop();
+  const footer = ops.filter((o) => o.type === 'text').pop();
+  assert.strictEqual(footer.lines[0], 'FRAMEWORK.STUDIO');
+  assert.ok(bar.y + bar.h <= footer.y - footer.font.size,
+    `bar bottom ${bar.y + bar.h} overlaps footer baseline ${footer.y}`);
+});
+
+test('art-full stops its artwork short of whichever label it carries', () => {
+  const size = S.ratioSize('4:5');
+  const art = (over) => L.build(doc(Object.assign({ layout: 'art-full' }, over)), size, measure)
+    .ops.find((o) => o.type === 'art');
+
+  const bare = art({ eyebrow: '', footer: '' });
+  assert.strictEqual(bare.y, 0, 'no labels: should bleed off the top');
+  assert.strictEqual(bare.y + bare.h, size.height, 'no labels: should bleed off the bottom');
+
+  assert.ok(art({ footer: '' }).y > 0, 'eyebrow: artwork should clear it');
+  assert.strictEqual(art({ footer: '' }).y + art({ footer: '' }).h, size.height,
+    'no footer: bottom should still bleed');
+
+  const full = art({});
+  assert.ok(full.y + full.h < size.height, 'footer: artwork should stop above it');
+});

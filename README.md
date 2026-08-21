@@ -371,13 +371,22 @@ Sizes go through `u()`, never raw pixels — one unit is `width / 1080`. That is
 The eyebrow and the footer are the same rank of label and share one spec at 22u mono,
 tracking 0.18em. Build them with `label(u)`, never `mono()` directly — they were two
 separate constants once and drifted to different sizes. A test now asserts they match in
-every layout and every ratio.
+every layout and every ratio, and that every layout actually carries both: `art-full` used
+to drop them, which meant a run of posts numbered in the eyebrow lost its number on
+whichever post happened to use that layout.
 
-Artwork runs to the edges rather than sitting inside the text margin, and in
-`headline-above` it reaches the bottom of the post with the footer overlaying it. Any box
-edge short of the post's own crops the cast shadow along an invisible line, which reads
-as a mistake rather than a bleed. `split` is the exception: its panel is a deliberate
-visual edge, so cropping there looks intended.
+A label left empty is not there at all — no op drawn, and no space held where it would
+have gone. That is what lets a sequence carry a number on every post and hold the url back
+for the one that reveals the name, without a gap opening in the other eight. Each layout
+gives the space back in its own direction: the three that hang the headline under the
+eyebrow move it up, and `art-full` drops its bar onto the bottom margin.
+
+Artwork runs to the edges rather than sitting inside the text margin. Any box edge short
+of the post's own crops the cast shadow along an invisible line, which reads as a mistake
+rather than a bleed — so it keeps every edge that has no label against it and stops short
+of the ones that do. In `headline-above` that is three edges, with the footer overlaying
+the bottom of it; in `art-full` it depends on which labels the post carries. `split` is
+the exception: its panel is a deliberate visual edge, so cropping there looks intended.
 
 ### Four things that will bite
 

@@ -117,6 +117,15 @@
     };
   }
 
+  // Labels are drawn in caps, and a label the writer left empty is not there at all: no
+  // op, and no space held where it would have gone. That is what lets a run of posts
+  // carry a number and hold the url back for the one post that reveals it, without a gap
+  // opening in all the others.
+  function caps(text) {
+    var trimmed = String(text || '').trim();
+    return trimmed ? trimmed.toUpperCase() : '';
+  }
+
   function noteFit(warnings, fit) {
     if (fit.shrunk > 0) warnings.push({ kind: 'shrunk', field: 'headline', steps: fit.shrunk });
     if (fit.clipped) warnings.push({ kind: 'clipped', field: 'headline', steps: fit.shrunk });
@@ -130,17 +139,21 @@
     var ops = [{ type: 'fill', x: 0, y: 0, w: size.width, h: size.height, role: 'bg' }];
 
     var eyebrowFont = label(u);
-    ops.push({
-      type: 'text', x: m, y: m + eyebrowFont.size, lines: [doc.eyebrow.toUpperCase()],
-      font: eyebrowFont, role: 'muted'
-    });
+    var eyebrow = caps(doc.eyebrow);
+    var boxTop = m;
 
-    var boxTop = m + eyebrowFont.size + u(46);
+    if (eyebrow) {
+      ops.push({
+        type: 'text', x: m, y: m + eyebrowFont.size, lines: [eyebrow],
+        font: eyebrowFont, role: 'muted'
+      });
+      boxTop = m + eyebrowFont.size + u(46);
+    }
+
     var fit = fitHeadline(doc.headline, u, column, size.height * HEADLINE_BOX, measure);
     noteFit(warnings, fit);
     ops.push({ type: 'text', x: m, y: boxTop + fit.font.size, lines: fit.lines, font: fit.font, role: 'fg' });
 
-    var footerFont = label(u);
     var artTop = boxTop + fit.height + u(48);
     // Runs to all three edges: any box edge short of the post's own crops the cast
     // shadow along an invisible line, which reads as a mistake rather than a bleed.
@@ -151,10 +164,13 @@
       composition: doc.art.composition, seed: doc.art.seed, theme: doc.theme
     });
 
-    ops.push({
-      type: 'text', x: m, y: size.height - m, lines: [doc.footer.toUpperCase()],
-      font: footerFont, role: 'muted'
-    });
+    var footer = caps(doc.footer);
+    if (footer) {
+      ops.push({
+        type: 'text', x: m, y: size.height - m, lines: [footer],
+        font: label(u), role: 'muted'
+      });
+    }
 
     return ops;
   }
@@ -168,21 +184,27 @@
 
     var eyebrowFont = label(u);
     var footerFont = label(u);
+    var eyebrow = caps(doc.eyebrow);
+    var footer = caps(doc.footer);
 
     // The footer always sits on the bottom margin. When the panel is stacked it has to
-    // stop short of it, or the footer floats in the middle of the post.
-    var footerBand = m + footerFont.size + u(30);
+    // stop short of it, or the footer floats in the middle of the post — and with no
+    // footer to clear, the panel runs to the bottom edge like the other three.
+    var footerBand = footer ? m + footerFont.size + u(30) : 0;
     var panel = stacked
       ? { x: 0, y: size.height * 0.44, w: size.width, h: size.height - size.height * 0.44 - footerBand }
       : { x: size.width * 0.52, y: 0, w: size.width * 0.48, h: size.height };
     var column = stacked ? size.width - m * 2 : panel.x - m - u(40);
 
-    ops.push({
-      type: 'text', x: m, y: m + eyebrowFont.size, lines: [doc.eyebrow.toUpperCase()],
-      font: eyebrowFont, role: 'muted'
-    });
+    var boxTop = m;
+    if (eyebrow) {
+      ops.push({
+        type: 'text', x: m, y: m + eyebrowFont.size, lines: [eyebrow],
+        font: eyebrowFont, role: 'muted'
+      });
+      boxTop = m + eyebrowFont.size + u(46);
+    }
 
-    var boxTop = m + eyebrowFont.size + u(46);
     var boxHeight = (stacked ? panel.y : size.height - footerBand) - boxTop - u(40);
     var fit = fitHeadline(doc.headline, u, column, boxHeight, measure);
     noteFit(warnings, fit);
@@ -196,10 +218,12 @@
       composition: doc.art.composition, seed: doc.art.seed, theme: doc.theme
     });
 
-    ops.push({
-      type: 'text', x: m, y: size.height - m,
-      lines: [doc.footer.toUpperCase()], font: footerFont, role: 'muted'
-    });
+    if (footer) {
+      ops.push({
+        type: 'text', x: m, y: size.height - m,
+        lines: [footer], font: footerFont, role: 'muted'
+      });
+    }
 
     return ops;
   }
@@ -207,27 +231,58 @@
   function artFull(doc, size, measure, u, warnings) {
     var m = u(TYPE.margin);
     var column = size.width - m * 2;
+    var labelFont = label(u);
+    var eyebrow = caps(doc.eyebrow);
+    var footer = caps(doc.footer);
+
+    // Both labels keep the margin they hold in every other layout, so someone going
+    // through a run of posts finds the number in the same corner every time and this
+    // layout stops being the one that quietly drops it.
+    //
+    // Which means the artwork can no longer bleed to all four edges. It keeps the ones
+    // with no label against them and stops short of the ones that have — headline-above's
+    // rule, for headline-above's reason: a label over a full-bleed sculpture lands on a
+    // block sooner or later, and a number crossing an edge reads as a mistake.
+    var footerBand = footer ? m + labelFont.size + u(30) : m;
+    var artTop = eyebrow ? m + labelFont.size + u(24) : 0;
+    var artBottom = footer ? size.height - footerBand : size.height;
+
     var ops = [
       { type: 'fill', x: 0, y: 0, w: size.width, h: size.height, role: 'bg' },
       {
-        type: 'art', x: 0, y: 0, w: size.width, h: size.height,
+        type: 'art', x: 0, y: artTop, w: size.width, h: artBottom - artTop,
         composition: doc.art.composition, seed: doc.art.seed, theme: doc.theme
       }
     ];
 
-    // The bar is the whole message here — no eyebrow, no footer competing with it.
+    if (eyebrow) {
+      ops.push({
+        type: 'text', x: m, y: m + labelFont.size, lines: [eyebrow],
+        font: labelFont, role: 'muted'
+      });
+    }
+
+    // The bar takes the bottom margin, and steps up out of the way when there is a
+    // footer underneath to clear.
     var fit = fitHeadline(doc.headline, u, column, size.height * 0.32, measure);
     noteFit(warnings, fit);
 
     var padding = u(48);
     var barHeight = fit.height + padding * 2;
-    var barTop = size.height - m - barHeight;
+    var barTop = size.height - footerBand - barHeight;
 
     ops.push({ type: 'fill', x: 0, y: barTop, w: size.width, h: barHeight, role: 'bar' });
     ops.push({
       type: 'text', x: m, y: barTop + padding + fit.font.size,
       lines: fit.lines, font: fit.font, role: 'barFg'
     });
+
+    if (footer) {
+      ops.push({
+        type: 'text', x: m, y: size.height - m, lines: [footer],
+        font: labelFont, role: 'muted'
+      });
+    }
 
     return ops;
   }
@@ -238,16 +293,23 @@
     var ops = [{ type: 'fill', x: 0, y: 0, w: size.width, h: size.height, role: 'bg' }];
 
     var eyebrowFont = label(u);
-    ops.push({
-      type: 'text', x: m, y: m + eyebrowFont.size, lines: [doc.eyebrow.toUpperCase()],
-      font: eyebrowFont, role: 'muted'
-    });
+    var footerFont = label(u);
+    var eyebrow = caps(doc.eyebrow);
+    var footer = caps(doc.footer);
 
-    var topRule = m + eyebrowFont.size + u(24);
+    var topRule = m;
+    if (eyebrow) {
+      ops.push({
+        type: 'text', x: m, y: m + eyebrowFont.size, lines: [eyebrow],
+        font: eyebrowFont, role: 'muted'
+      });
+      topRule = m + eyebrowFont.size + u(24);
+    }
     ops.push({ type: 'rule', x: m, y: topRule, w: column, thickness: Math.max(1, u(2)), role: 'fg' });
 
-    var footerFont = label(u);
-    var bottomRule = size.height - m - footerFont.size - u(30);
+    // The rules are the layout, so both stay whether or not a label sits against them —
+    // a rule simply moves onto the margin the missing label would have used.
+    var bottomRule = footer ? size.height - m - footerFont.size - u(30) : size.height - m;
 
     // No artwork competing for space, so the headline gets the whole middle.
     var boxTop = topRule + u(60);
@@ -259,10 +321,12 @@
     ops.push({ type: 'text', x: m, y: centred + fit.font.size, lines: fit.lines, font: fit.font, role: 'fg' });
 
     ops.push({ type: 'rule', x: m, y: bottomRule, w: column, thickness: Math.max(1, u(2)), role: 'fg' });
-    ops.push({
-      type: 'text', x: m, y: size.height - m, lines: [doc.footer.toUpperCase()],
-      font: footerFont, role: 'muted'
-    });
+    if (footer) {
+      ops.push({
+        type: 'text', x: m, y: size.height - m, lines: [footer],
+        font: footerFont, role: 'muted'
+      });
+    }
 
     return ops;
   }
