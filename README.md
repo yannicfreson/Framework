@@ -129,14 +129,23 @@ Three things worth keeping in mind before editing it:
   renderer would draw no shadow at all while the WebGL one drew nine. The shadows are
   half the pleasure of it: nine slabs scattered across the floor that plainly cannot have
   been thrown by an F.
-- **The frame holds every block through the whole turn, and the shadow only at rest.**
+- **The frame holds every block through the whole turn. The shadow gets what is left.**
   A block hanging in mid-air throws its shadow a long way to one side and swings it much
   further than it moves itself, so reserving frame for the shadow at every angle costs the
-  letter a third of its width. It is not worth it: no block is ever sliced, the letter
-  state is complete down to its shadows, and past that a shadow is allowed off the edge
-  while the thing tumbles. Both renderers compute this identically — the hero SVG is
-  generated with the mark's own `yawRange`, `motion.js` reads the same one. Change `TURN`
-  and the SVG has to be regenerated, or the art will resize when the canvas takes over.
+  letter a third of its width — and holding even the resting cast in full costs another
+  6%. Neither is worth it. `shadowRoom: 0.8` is where the letter stops growing: below that
+  the blocks sweeping through the turn set the width on their own and giving up more
+  shadow buys nothing. No block is ever sliced, which is the part that matters.
+
+  Worth knowing if you go looking for more: the *bottom* is never the constraint. The art
+  is landscape and the panel is portrait, so the frame is already taller than the art
+  needs and vertical shadow is free — the full cast spills 27 units past the right edge
+  and none at all past the bottom. Width is the only axis that costs anything, and the
+  remaining lever on it is `TURN`.
+
+  Both renderers compute all of this identically, from the composition's own framing.
+  Change `TURN` and the SVG has to be regenerated, or the art will resize when the canvas
+  takes over.
 - **No two blocks may share space.** That is the rule the spacing exists to satisfy, and
   it is worth checking rather than eyeballing: the sculpture is rigid, so two blocks that
   intersect in space intersect at *every* angle of the turn, and they read as one odd

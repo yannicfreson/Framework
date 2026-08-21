@@ -328,7 +328,7 @@
   // differently — 1.16 flat, 1.06 rendered — so a `mark` regenerated from the CLI came out
   // a tenth larger than the canvas drew it. One number, one place.
   var FRAMING = {
-    mark: { yawRange: [0, 1.25], shadowRoom: 1, padding: 1.06 }
+    mark: { yawRange: [0, 1.25], shadowRoom: 0.8, padding: 1.06 }
   };
 
   function framingFor(composition) {
@@ -363,6 +363,25 @@
       minB = Math.min(minB, box.b); maxB = Math.max(maxB, box.b + box.db);
     });
     return { a: (minA + maxA) / 2, b: (minB + maxB) / 2 };
+  }
+
+  // Where a box's corners land on the floor once the key pushes them, walked only `room`
+  // of the way out. The shadow is still *drawn* whole; this is only what the frame is
+  // asked to hold, which is why the tips of a long cast are allowed off the edge.
+  function castFraming(box, room) {
+    var z = box.z || 0;
+    var points = [];
+
+    for (var i = 0; i < 8; i++) {
+      var a = box.a + ((i & 1) ? box.da : 0);
+      var b = box.b + ((i & 2) ? box.db : 0);
+      var up = z + ((i & 4) ? box.h : 0);
+      var t = up / LIGHT.up;
+
+      points.push(project(a - LIGHT.a * t * room, b - LIGHT.b * t * room, up * (1 - room)));
+    }
+
+    return points;
   }
 
   // Every corner of every solid at every sampled angle. Solids only, deliberately: the
@@ -412,6 +431,8 @@
     var withShadow = opt.shadow !== false;
     var framing = framingFor(opt.composition);
     var yawRange = opt.yawRange !== undefined ? opt.yawRange : framing.yawRange;
+    var room = typeof opt.shadowRoom === 'number' ? opt.shadowRoom
+      : (typeof framing.shadowRoom === 'number' ? framing.shadowRoom : 1);
     var hatched = opt.style !== 'flat';
     var ink = theme.ink || '#16171A';
 
@@ -429,7 +450,7 @@
       if (withShadow && (box.cast || !box.z)) {
         if (hatched) {
           var cast = castPolygon(box);
-          all = all.concat(cast);
+          all = all.concat(castFraming(box, room));
           shadowParts.push('    <polygon points="' + points(cast) + '" fill="url(#fw-hatch-cast)"/>');
         } else {
           all = all.concat(f.ground);
