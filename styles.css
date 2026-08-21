@@ -259,16 +259,20 @@ html.motion .reveal.is-done .wipe { clip-path: none; }
 
 .site-header.is-scrolled { padding-top: 12px; padding-bottom: 12px; }
 
+/* The logo is drawn, not set: assets/wordmark.js generates it from the mark's own
+   measurements and the markup is inlined so there is no request and no reflow. It strokes
+   in currentColor, which is what keeps the hover state working. */
 .wordmark {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 20px;
-  font-weight: 400;
-  letter-spacing: 0.01em;
 }
 .wordmark:hover { color: var(--ink); }
-.wordmark .mark { flex: none; }
+.wordmark__art {
+  display: block;
+  height: 17px;
+  width: auto;
+  flex: none;
+}
 
 .site-nav {
   display: flex;
@@ -862,7 +866,7 @@ html.motion .reveal.section--dark.is-in::before { transform: scaleY(1); }
 
   .site-header { padding: 14px var(--gutter); }
   .site-header.is-scrolled { padding-top: 14px; padding-bottom: 14px; }
-  .wordmark { font-size: 18px; }
+  .wordmark__art { height: 14px; }
 
   .hero__meta { grid-template-columns: 1fr; gap: 10px; }
   .hero__actions > div .btn { flex: 1 1 auto; justify-content: center; }
