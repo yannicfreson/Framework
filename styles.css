@@ -684,7 +684,14 @@ html.motion .reveal.section--dark.is-in::before { transform: scaleY(1); }
   gap: 14px;
 }
 
-.member__photo { aspect-ratio: 3 / 4; }
+/* The portraits are engraved on the same paper the page is, so without a rule they have
+   no edge at all — the hairline is what makes five of them read as a row of five. */
+.member__photo {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  background: var(--paper-band);
+}
 .member__photo img { width: 100%; height: 100%; object-fit: cover; }
 .member .placeholder__label { left: 14px; bottom: 14px; font-size: 10px; letter-spacing: 0.1em; }
 

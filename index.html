@@ -242,30 +242,43 @@
       <h2 id="team-h" class="mask"><span class="eyebrow section__index">05 — The five</span></h2>
       <div class="mask" style="--d:80ms"><p class="section__note">No account layer, no juniors learning on your budget. These are the people on your project.</p></div>
     </div>
+    <!-- Portraits are engraved with /photo-stylizer, exported at 3:4 to match
+         .member__photo. They carry alt="" on purpose: the name and the role sit right
+         beside each one as text, so an alt would only repeat what is already announced,
+         and what the picture actually adds — a face — is not something alt can carry. -->
     <ul class="team">
       <li class="member">
-        <!-- Swap .member__photo for <img src="…" alt="…"> when portraits are ready. -->
-        <div class="member__photo placeholder wipe wipe--up" style="--d:180ms"><span class="placeholder__label">[ portrait ]</span></div>
+        <div class="member__photo wipe wipe--up" style="--d:180ms">
+          <img src="/assets/team/frontend.png" alt="" width="1080" height="1440" loading="lazy" decoding="async">
+        </div>
         <span class="member__name mask" style="--d:300ms"><span>Name</span></span>
         <span class="mono-meta mask" style="--d:320ms"><span>Frontend</span></span>
       </li>
       <li class="member">
-        <div class="member__photo placeholder wipe wipe--up" style="--d:240ms"><span class="placeholder__label">[ portrait ]</span></div>
+        <div class="member__photo wipe wipe--up" style="--d:240ms">
+          <img src="/assets/team/backend.png" alt="" width="1080" height="1440" loading="lazy" decoding="async">
+        </div>
         <span class="member__name mask" style="--d:360ms"><span>Name</span></span>
         <span class="mono-meta mask" style="--d:380ms"><span>Backend</span></span>
       </li>
       <li class="member">
-        <div class="member__photo placeholder placeholder--dark wipe wipe--up" style="--d:300ms"><span class="placeholder__label">[ portrait ]</span></div>
+        <div class="member__photo wipe wipe--up" style="--d:300ms">
+          <img src="/assets/team/devops.png" alt="" width="1080" height="1440" loading="lazy" decoding="async">
+        </div>
         <span class="member__name mask" style="--d:420ms"><span>Name</span></span>
         <span class="mono-meta mask" style="--d:440ms"><span>DevOps</span></span>
       </li>
       <li class="member">
-        <div class="member__photo placeholder wipe wipe--up" style="--d:360ms"><span class="placeholder__label">[ portrait ]</span></div>
+        <div class="member__photo wipe wipe--up" style="--d:360ms">
+          <img src="/assets/team/project-lead.png" alt="" width="1080" height="1440" loading="lazy" decoding="async">
+        </div>
         <span class="member__name mask" style="--d:480ms"><span>Name</span></span>
         <span class="mono-meta mask" style="--d:500ms"><span>Project lead</span></span>
       </li>
       <li class="member">
-        <div class="member__photo placeholder wipe wipe--up" style="--d:420ms"><span class="placeholder__label">[ portrait ]</span></div>
+        <div class="member__photo wipe wipe--up" style="--d:420ms">
+          <img src="/assets/team/business.png" alt="" width="1080" height="1440" loading="lazy" decoding="async">
+        </div>
         <span class="member__name mask" style="--d:540ms"><span>Name</span></span>
         <span class="mono-meta mask" style="--d:560ms"><span>Business &amp; sales</span></span>
       </li>
